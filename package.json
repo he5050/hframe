@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/he5050/hframe.git"
+    "url": "https://github.com/he5050/hframe.git"
   },
   "keywords": [],
-  "author": "hhh",
+  "author": "he5050",
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.26.0",
