@@ -21,6 +21,7 @@ const ossTool = {
   // 处理路径
   dealWithURL(path) {
     console.log(path);
+    // 绑定域名服务
     // if (path.indexOf('hjfmytest.oss-cn-shenzhen.aliyuncs.com') > 0) {
     //   path = path.replace(/hjfmytest.oss-cn-shenzhen.aliyuncs.com/g, 'img.hjfmytest.com');
     // }
