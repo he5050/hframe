@@ -1,0 +1,115 @@
+@mixin error-page-web {
+  // background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 600px;
+  min-width: 800px;
+  .body {
+    max-height: 500px;
+    max-width: 900px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+  }
+  .img-block {
+    padding-right: 80px;
+    padding-left: 40px;
+    flex: 1;
+    height: 400px;
+    .img-item {
+      width: 100%;
+      height: 100%;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+  }
+  .content-block {
+    flex: 1;
+    h1 {
+      color: #434e59;
+      font-size: 72px;
+      font-weight: 600;
+      line-height: 72px;
+      margin-bottom: 24px;
+    }
+    .desc {
+      color: rgba(#000, 0.45);
+      font-size: 20px;
+      line-height: 28px;
+      margin-bottom: 16px;
+    }
+    .actions {
+      a {
+        line-height: 32px;
+        height: 32px
+      }
+    }
+  }
+}
+
+@mixin error-page-wap {
+  background-color: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  .body {
+    max-height: 600px;
+    max-width: 375px;
+    width: 100%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .img-block {
+    flex: 1;
+    width: 65%;
+    .img-item {
+      width: 100%;
+      height: 100%;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+  }
+  .content-block {
+    flex: 1;
+    text-align: center;
+    h1 {
+      color: #434e59;
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 36px;
+      margin-bottom: 14px;
+    }
+    .desc {
+      color: rgba(#000, 0.45);
+      font-size: 16px;
+      line-height: 28px;
+      margin-bottom: 16px;
+    }
+    .actions {
+      a {
+        line-height: 32px;
+        height: 32px
+      }
+    }
+  }
+}
+
+.m-error-page {
+  @media (min-width: 768px) {
+    @include error-page-web();
+  }
+  @media (max-width:767px) {
+    @include error-page-wap();
+  }
+}
