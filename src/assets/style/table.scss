@@ -1,0 +1,199 @@
+// color
+$main-color: #1890ff; // 主色
+// 错误色
+$error-color: #f5222d;
+
+@mixin clearfix() {
+  &:before,
+  &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+.ant-table-thead>tr>th .ant-table-filter-icon,
+.ant-table-thead>tr>th .anticon-filter {
+  &[data-class='filter-active'] {
+    color: $main-color;
+  }
+}
+
+.ant-table {
+  // 表格数据比较少的时候 设置一个最小高度
+  .ant-table-body {
+    min-height: 540px;
+  }
+}
+
+.ant-table-title{
+  // 表格头 按钮
+  text-align: left;
+}
+
+.ant-table .ant-table-thead>tr>th{
+  white-space: nowrap;
+}
+.ant-table .ant-table-tbody>tr>td{
+  word-break: keep-all;
+  &.nowrap{
+    white-space: nowrap;
+  }
+}
+
+.ant-table .ant-table-tbody>tr>td,
+.ant-table .ant-table-thead>tr>th {
+  // 去除右边线 设置最后一个为右对齐
+  border-right: none;
+  &:nth-last-of-type(1) {
+    // 设置最后列对齐样式
+    text-align: right;
+  }
+}
+
+.ant-table.ant-table-empty {
+  // 内容为空时 空白的最小高度
+  .ant-table-placeholder {
+    min-height: 540px;
+    line-height: 540px;
+    border: none;
+  } // 清空内容区域最小高度
+  .ant-table-body {
+    min-height: 0;
+  }
+}
+
+.ant-table.ant-table-bordered .ant-table-title {
+  // 表格标题  边线 移除
+  border: none;
+}
+
+.ant-table-bordered .ant-table-body>table,
+.ant-table-bordered .ant-table-fixed-left table,
+.ant-table-bordered .ant-table-fixed-right table,
+.ant-table-bordered .ant-table-header>table {
+  // 移除整个 表格的 外边框
+  border: none;
+}
+
+.action-btn {
+  a {
+    position: relative;
+    color: $main-color;
+    &:hover {
+      color: lighten($main-color, 20%);
+    }
+    &:nth-child(n + 2) {
+      padding-left: 8px;
+    }
+    &:nth-last-child(n + 2) {
+      padding-right: 8px;
+    }
+    &.danger {
+      color: $error-color;
+      &:hover {
+        color: lighten($error-color, 20%);
+      }
+    }
+    &.primary {
+      color: $main-color;
+      &:hover {
+        color: lighten($main-color, 20%);
+      }
+    }
+    &:before {
+      content: " ";
+      background-color: #e8e8e8;
+      margin-top: -7px;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 1px;
+      height: 14px;
+    }
+    &:nth-last-of-type(1) {
+      &:before {
+        content: none
+      }
+    }
+  }
+}
+
+.ant-table-title{
+  padding: 0;
+  margin: 16px 0;
+}
+
+// 表格筛选样式
+.u-table-filter {
+  $item-space: 16px;
+  >.ant-row {
+    margin-bottom: $item-space;
+    &:nth-child(1) {
+      margin-top: $item-space;
+      &.one-row {
+        margin-top: 0;
+      }
+    }
+  }
+  .ant-form-item {
+    display: flex;
+    margin-bottom: 0;
+    margin-right: 0;
+    >.ant-form-item-label {
+      width: auto;
+      padding-right: 8px;
+      line-height: 32px;
+    }
+    >.ant-form-item-control-wrapper {
+      flex: 1;
+      line-height: 32px;
+      .ant-calendar-picker {
+        width: 100%;
+      }
+    }
+    .ant-form-item-control {
+      line-height: 32px;
+    }
+  }
+  .filter-button {
+    line-height: 32px; // margin-bottom: $item-space;
+    @include clearfix();
+    a {
+      color: $main-color;
+      &:hover {
+        color: lighten($main-color, 20%);
+      }
+    }
+    .button-group {
+      .ant-btn {
+        &+.ant-btn,
+        &+a {
+          margin-left: 8px;
+        }
+      }
+    }
+    &.align-right {
+      .button-group {
+        float: right;
+      }
+    }
+  }
+  /* label文字宽度大约在15px */
+  $font-width:15px;
+  /* label初始宽度大约在14px */
+  $font-init-width:22px;
+  @for $i from 2 to 7 {
+    &.title-length-#{$i} {
+      .ant-form-item>.ant-form-item-label {
+        min-width: ($font-init-width + $font-width * $i);
+      }
+    }
+  }
+  /* 最后一行间距为0 */
+  >div:nth-last-child(1) {
+    margin-bottom: 0;
+  }
+}
