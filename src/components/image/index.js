@@ -147,7 +147,7 @@ HFImage.propTypes = {
 };
 
 // <HFImage
-//   imageUrl='http://img2.jsbn.com/venus/canmeramanHosterPro/20160321/1458535211448078720150929170217934776_1200x800.jpg'
+//   imageUrl='http://wwww.img/com/1458535211448078720150929170217934776_1200x800.jpg'
 //   linkUrl='http://www.baidu.com'
 //   width={600}
 //   aspectRatio='3:2'

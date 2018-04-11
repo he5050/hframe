@@ -65,7 +65,7 @@ class HFUpload extends BaseComponent('HFUpload') {
       return null;
     } else {
       // TODO:antd3.3.1的一个bug，结尾如果不是以jpg结尾的话会当成文件处理
-      let computeUrl = computeUrl({
+      let thumbUrl = computeUrl({
         imageUrl: url,
         width: 100,
         aspectRatio: '1:1',
@@ -73,8 +73,8 @@ class HFUpload extends BaseComponent('HFUpload') {
         processType: EmImgProcessType.emGD_S_S,
         water: false
       })+'&.jpg';
-      console.log(' 处理后的图片地址',computeUrl);
-      return computeUrl;
+      console.log(' 处理后的图片地址',thumbUrl);
+      return thumbUrl;
     }
   }
 

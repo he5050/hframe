@@ -21,9 +21,9 @@ const ossTool = {
   // 处理路径
   dealWithURL(path) {
     console.log(path);
-    if (path.indexOf('hjfmytest.oss-cn-shenzhen.aliyuncs.com') > 0) {
-      path = path.replace(/hjfmytest.oss-cn-shenzhen.aliyuncs.com/g, 'img.hjfmytest.com');
-    }
+    // if (path.indexOf('hjfmytest.oss-cn-shenzhen.aliyuncs.com') > 0) {
+    //   path = path.replace(/hjfmytest.oss-cn-shenzhen.aliyuncs.com/g, 'img.hjfmytest.com');
+    // }
     
     if (!path.startsWith('http:') && !path.startsWith('https:')) {
       path = 'http:' + path;
