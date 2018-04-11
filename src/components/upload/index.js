@@ -20,6 +20,7 @@ class HFUpload extends BaseComponent('HFUpload') {
     };
   }
 
+  // 处理
   dealWith(value) {
     if (!value) {
       return [];
@@ -58,12 +59,13 @@ class HFUpload extends BaseComponent('HFUpload') {
 
   // 配置缩略图地址
   getThumbUrl(url) {
+    console.log('缩略图地址:',url);
     const { listType = 'text' } = this.props;
     if (listType === 'text') {
       return null;
     } else {
       // TODO:antd3.3.1的一个bug，结尾如果不是以jpg结尾的话会当成文件处理
-      return computeUrl({
+      let computeUrl = computeUrl({
         imageUrl: url,
         width: 100,
         aspectRatio: '1:1',
@@ -71,9 +73,12 @@ class HFUpload extends BaseComponent('HFUpload') {
         processType: EmImgProcessType.emGD_S_S,
         water: false
       })+'&.jpg';
+      console.log(' 处理后的图片地址',computeUrl);
+      return computeUrl;
     }
   }
 
+  // 上传操作
   onChange = (info) => {
     let files = [...this.state.files];
     let item = _.find(files, { uid: info.file.uid });
@@ -101,6 +106,7 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
   }
 
+  //删除
   onRemove = (file) => {
     if (file.url) {
       this.oss.deleteFile(file.url);
@@ -113,6 +119,7 @@ class HFUpload extends BaseComponent('HFUpload') {
     );
   }
 
+  // change
   triggerChange = () => {
     const { onChange, value } = this.props;
     if (onChange) {
@@ -131,6 +138,7 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
   }
 
+  // 进度
   onProgress = (e, file) => {
     let files = update(this.state.files, {
       $apply: (o) => {
@@ -144,6 +152,7 @@ class HFUpload extends BaseComponent('HFUpload') {
     this.setState({ files });
   }
 
+  // upload操作
   handUpload = (fs) => {
     const { uploadDir, suffix } = this.props;
     this.oss.uploadFile(fs.file, uploadDir, suffix, (percentage) => {
@@ -159,6 +168,7 @@ class HFUpload extends BaseComponent('HFUpload') {
     });
   }
 
+  // 操作前的检查
   beforeUpload = () => {
     const { limit = 99999 } = this.props;
     if (this.state.files.length >= limit) {
@@ -183,6 +193,8 @@ class HFUpload extends BaseComponent('HFUpload') {
 
   render() {
     const { accept, multiple = false, limit = 99999, listType = 'text', disabled = false, uploadRender } = this.props;
+    console.log('upload',this.state);
+
     let ps = {
       accept: accept,
       multiple: multiple,
@@ -198,6 +210,8 @@ class HFUpload extends BaseComponent('HFUpload') {
       onChange: this.onChange,
       fileList: this.state.files,
     };
+
+    // 显示默认
     const defaultRender = (fileList) => {
       if (fileList.length >= limit) {
         return null;
@@ -223,6 +237,7 @@ class HFUpload extends BaseComponent('HFUpload') {
         }
       }
     };
+
     return (
       <div>
         <Upload {...ps}>
