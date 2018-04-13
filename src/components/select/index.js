@@ -18,34 +18,55 @@ class HFSelect extends BaseComponent('HFSelect') {
         pageSize: props.pageSize||20,
       },
       count: 0,
-      fetching: false,
-      keyId: props.keyId
+      fetching: false
     };
     this.handleSearch = debounce(this.onSearch, 800);
   }
 
-  async fetchData(p, keyId, isMore = false, nextProps = this.props) {
+  // 分割url和参数
+  splitQueryUrl(props) {
+    const { dataUrl } = props;
+    let params = {};
+    let arrs = dataUrl.split("?");
+    if (arrs[1] && arrs[1].length > 0) {
+      let ps = arrs[1].split("&"); 
+      // 解析参数
+      _.each(ps, (v) => {
+        let pa = v.split("=");
+        if (pa.length === 2) {
+          params[pa[0]] = pa[1];
+        }
+      });
+    }
+
+    // url和参数
+    return {
+      url: arrs[0],
+      queryParams: {
+        ...params
+      }
+    };
+  }
+
+  async fetchData(p, isMore = false, props = this.props) {
     // 如果是不可编辑状态，不去请求搜索列表
-    if (nextProps.disabled) {
+    if (props.disabled || this.state.fetching) {
       return;
     }
 
-    // 基于某个keyId选择，不存在的情况下说明父组件还未准备好
-    if (p[keyId] === undefined || this.state.fetching) {
-      return;
-    }
+    // 解析参数
+    const { url, queryParams } = this.splitQueryUrl(props);
 
     // 避免没必要的刷新
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
 
-    this.setState({ fetching: true });
-    let resp = {
-      succ: false
-    };
+    let resp = {};
     try {
-      resp = await fetchPack.get(utils.buildQueryUrl(this.props.listUrl, { ...p }));
+      this.setState({ fetching: true });
+      resp = await fetchPack.get(utils.buildQueryUrl(url, { ...queryParams, ...p }));
     } catch (error) {
+      resp.succ = false;
       console.log(error);
     }
     if (fetchId !== this.lastFetchId) {
@@ -83,30 +104,24 @@ class HFSelect extends BaseComponent('HFSelect') {
   }
 
   componentWillMount() {
-    this.initData(this.props);
+    this.setState({ data: []});
+    this.fetchData({
+        ...this.state.queryParams,
+        pageIndex: 1,
+      },
+      false,
+      this.props
+    );
   }
 
   componentWillReceiveProps(nextProps) {
-    this.initData(nextProps);
-  }
-
-  initData(nextProps) {
-    if (nextProps[nextProps.keyId] === undefined) {
-      this.setState({ 
-        data: [],
-        queryParams:{
-          pageIndex: 1,
-          pageSize: nextProps.pageSize||20,
-        }
-      });
-    } else if (nextProps[nextProps.keyId] !== this.state.queryParams[nextProps.keyId]) {
+    // 属性发生改变
+    if (this.props.dataUrl !== nextProps.dataUrl) {
       this.setState({ data: []});
       this.fetchData({
-        ...this.state.queryParams,
-        pageIndex: 1,
-        [nextProps.keyId]: nextProps[nextProps.keyId]
-      },
-        nextProps.keyId,
+          ...this.state.queryParams,
+          pageIndex: 1,
+        },
         false,
         nextProps
       );
@@ -120,7 +135,7 @@ class HFSelect extends BaseComponent('HFSelect') {
       p.pageIndex = 1;
     }
     p[searchKey] = value;
-    this.fetchData(p, this.state.keyId);
+    this.fetchData(p);
   }
 
   onMore = () => {
@@ -129,7 +144,7 @@ class HFSelect extends BaseComponent('HFSelect') {
     }
     let p = { ...this.state.queryParams };
     p.pageIndex += 1;
-    this.fetchData(p, this.state.keyId, true);
+    this.fetchData(p, true);
   }
 
   handleChange = (v) => {
@@ -175,13 +190,12 @@ class HFSelect extends BaseComponent('HFSelect') {
 }
 
 HFSelect.propTypes = {
-  keyId: PropTypes.string.isRequired,
   value: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   placeholder: PropTypes.string,
   showSearch: PropTypes.bool,
   allowClear: PropTypes.bool,
   mode: PropTypes.string,
-  listUrl: PropTypes.string.isRequired,
+  dataUrl: PropTypes.string.isRequired,
   onChange: PropTypes.func,
   optionValue: PropTypes.func.isRequired,
 };
