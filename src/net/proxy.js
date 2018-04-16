@@ -17,8 +17,9 @@ export default class Proxy {
    * @param {*} path 请求地址
    * @param {*} body body
    * @param {*} session 用户session，可以为空
+   * @param {*} header 是否返回头文件 默认为空
    */
-  Post(path, body, session) {
+  Post(path, body, session, header) {
     return new Promise((resolve, reject) => {
       let data = {
         succ: false,
@@ -52,6 +53,7 @@ export default class Proxy {
           chunks += chunk;
         });
         res.on('end', () => {
+          // let data = header ? {[header]:headers[header],...res.data};
           if (res.statusCode != 200) {
             data.msg = '服务器应答异常';
             data.code = res.statusCode;

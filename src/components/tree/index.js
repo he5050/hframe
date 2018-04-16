@@ -49,7 +49,7 @@ class HFTree extends BaseComponent('HFTree') {
   render() {
     const { dataSource=[], disabled=false } = this.props;
     return (
-      <Tree checkable 
+      <Tree checkable
         disabled={disabled}
         onExpand={this.onExpand}
         onCheck={this.onCheck}
