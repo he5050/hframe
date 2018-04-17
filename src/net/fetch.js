@@ -23,6 +23,8 @@ class FetchPack {
         body: JSON.stringify(body)
       });
       respData = await resp.json();
+      respData.succ = true;
+      respData.msg = respData.message || '';
     } catch (err) {
       respData.succ = false;
       respData.msg = `网络异常:${err}`;
@@ -32,7 +34,6 @@ class FetchPack {
     if (respData.code === 302) {
       window.location.href = respData.data[0];
     }
-
     return respData;
   }
 
@@ -43,6 +44,8 @@ class FetchPack {
         method: 'get'
       });
       respData = await resp.json();
+      respData.succ = true;
+      respData.msg = respData.message || '';
     } catch (err) {
       respData.succ = false;
       respData.msg = `网络异常:${err}`;
