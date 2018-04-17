@@ -23,8 +23,15 @@ class FetchPack {
         body: JSON.stringify(body)
       });
       respData = await resp.json();
-      respData.succ = true;
-      respData.msg = respData.message || '';
+      if (respData.status === 500) {
+        respData.succ = false;
+        respData.msg = respData.message || '';
+      }
+
+      if (respData.status === 200) {
+        respData.succ = true;
+        respData.msg = respData.message || '';
+      }
     } catch (err) {
       respData.succ = false;
       respData.msg = `网络异常:${err}`;
@@ -44,8 +51,17 @@ class FetchPack {
         method: 'get'
       });
       respData = await resp.json();
-      respData.succ = true;
-      respData.msg = respData.message || '';
+
+      if (respData.status === 500) {
+        respData.succ = false;
+        respData.msg = respData.message || '';
+      }
+
+      if (respData.status === 200) {
+        respData.succ = true;
+        respData.msg = respData.message || '';
+      }
+
     } catch (err) {
       respData.succ = false;
       respData.msg = `网络异常:${err}`;
