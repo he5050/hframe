@@ -55,7 +55,7 @@ export default class Proxy {
           chunks += chunk;
         });
         res.on('end', () => {
-          if (res.statusCode !== 200) {
+          if (res.statusCode != 200) {
             data.msg = '服务器应答异常';
             data.code = res.statusCode;
             resolve(data);
@@ -163,7 +163,7 @@ export default class Proxy {
           chunks += chunk;
         });
         res.on('end', () => {
-          if (res.statusCode !== 200) {
+          if (res.statusCode != 200) {
             data.msg = '服务器应答异常';
             data.code = res.statusCode;
             resolve(data);
