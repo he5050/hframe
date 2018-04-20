@@ -61,7 +61,6 @@ class FetchPack {
         respData.succ = true;
         respData.msg = respData.message || '';
       }
-
     } catch (err) {
       respData.succ = false;
       respData.msg = `网络异常:${err}`;

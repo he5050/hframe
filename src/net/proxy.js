@@ -20,7 +20,7 @@ export default class Proxy {
    * @param {*} header 是否返回头文件 默认为空
    */
   Post(path, body, session, header) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let data = {
         succ: false,
         msg: "",
@@ -32,7 +32,7 @@ export default class Proxy {
       let bodyString = new Buffer(JSON.stringify(body));
       let headers = {
         'Content-Type': 'application/json',
-        'Content-Length': bodyString.length,
+        'Content-Length': bodyString.length
       };
 
       // 是否带上seesion
@@ -45,17 +45,17 @@ export default class Proxy {
         method: "POST",
         headers: headers,
         host: this.host,
-        port: this.port,
+        port: this.port
       };
 
-      let req = http.request(options, (res) => {
+      let req = http.request(options, res => {
         res.setEncoding('utf8');
         let chunks = "";
-        res.on('data', (chunk) => {
+        res.on('data', chunk => {
           chunks += chunk;
         });
         res.on('end', () => {
-          if (res.statusCode != 200) {
+          if (res.statusCode !== 200) {
             data.msg = '服务器应答异常';
             data.code = res.statusCode;
             resolve(data);
@@ -82,7 +82,7 @@ export default class Proxy {
             }
           }
         });
-        res.on('error', (e) => {
+        res.on('error', e => {
           data.msg = e.message;
           data.code = 404;
           resolve(data);
@@ -92,7 +92,7 @@ export default class Proxy {
       // 设置请求超时30秒
       req.setTimeout(30000);
 
-      req.on('error', (e) => {
+      req.on('error', e => {
         console.log('请求出错了!', e);
         if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
           req.res.abort();
@@ -101,7 +101,7 @@ export default class Proxy {
         data.msg = '服务器错误';
         data.code = 404;
         resolve(data);
-      }).on('timeout', (e) => {
+      }).on('timeout', e => {
         console.log('请求超时', e);
         if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
           req.res.abort();
@@ -125,7 +125,7 @@ export default class Proxy {
    * @param {*} expiration 缓存时间间隔，单位毫秒
    */
   Get(path, session, isCache = false, expiration = 15000) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (isCache) {
         let cData = cachePool.get(path);
         if (cData !== null) {
@@ -134,7 +134,7 @@ export default class Proxy {
       }
 
       let headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       };
       if (session) {
         headers['Login-User'] = encodeURIComponent(JSON.stringify(session));
@@ -145,7 +145,7 @@ export default class Proxy {
         method: "GET",
         headers: headers,
         host: this.host,
-        port: this.port,
+        port: this.port
       };
 
       let data = {
@@ -156,14 +156,14 @@ export default class Proxy {
         count: 0
       };
 
-      let req = http.request(options, (res) => {
+      let req = http.request(options, res => {
         res.setEncoding('utf8');
         let chunks = "";
-        res.on('data', (chunk) => {
+        res.on('data', chunk => {
           chunks += chunk;
         });
         res.on('end', () => {
-          if (res.statusCode != 200) {
+          if (res.statusCode !== 200) {
             data.msg = '服务器应答异常';
             data.code = res.statusCode;
             resolve(data);
@@ -187,7 +187,7 @@ export default class Proxy {
             }
           }
         });
-        res.on('error', (e) => {
+        res.on('error', e => {
           data.msg = e.message;
           data.code = 404;
           resolve(data);
@@ -197,7 +197,7 @@ export default class Proxy {
       // 设置请求超时30秒
       req.setTimeout(30000);
 
-      req.on('error', (e) => {
+      req.on('error', e => {
         console.log('请求出错了', e);
         if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
           req.res.abort();
@@ -206,7 +206,7 @@ export default class Proxy {
         data.msg = '服务器错误';
         data.code = 404;
         resolve(data);
-      }).on('timeout', (e) => {
+      }).on('timeout', e => {
         console.log('请求超时了', e);
         if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
           req.res.abort();
