@@ -1,14 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import _ from "lodash";
-import { Card, Icon, Modal, Table, Dropdown, Menu,} from "antd";
+import { Icon, Modal, Table, Dropdown, Menu } from "antd";
 import BaseComponent from '../../middleware/base_component';
 import HFImage from "../image";
 import HFFilter, { FilterItemType } from "./filter";
 
 const TabColumnType = {
   Picture: 1, // 图片
-  BtnGroup: 2, // 操作按钮组
+  BtnGroup: 2 // 操作按钮组
 };
 
 class HFTable extends BaseComponent('HFTable') {
@@ -30,7 +30,7 @@ class HFTable extends BaseComponent('HFTable') {
       pagination: pagination ? _.merge(pagination, this.paginationDefault) : pagination,
       columns: this.getColumns(),
       scroll: !scroll ? { x: true } : scroll,
-      rowKey: rowKey,
+      rowKey: rowKey
     };
     return (
       <div className={`u-table-list ${isMobile ? 'wap' : 'web'}`}>
@@ -41,44 +41,50 @@ class HFTable extends BaseComponent('HFTable') {
 
   getColumns = () => {
     const { columns, isMobile } = this.props;
-    return _.map(columns, (v) => {
+    return _.map(columns, v => {
       let n = {
         ...v
       };
       switch (v.type) {
         case TabColumnType.Picture: {
-          //数据为图片时,增加图片列Column
+          // 数据为图片时,增加图片列Column
           n.className = `img-column ${ n.className || ''}`;
-          n.render = (text) => {
+          n.render = text => {
+            let imgSize = { height: 40 };
+            // 配置图片宽度和高度 如果为空，则默认设置图片高度
+            if (v.attribute.width || v.attribute.height) {
+              imgSize = {
+                width: v.attribute.width,
+                height: v.attribute.height
+              };
+            }
             return (
               <HFImage
+                {...imgSize}
+                style={imgSize}
                 imageUrl={text}
-                height={40}
                 aspectRatio={v.attribute.aspectRatio}
                 quality={80}
                 processType={v.attribute.processType}
                 water={false} />
             );
           };
-          n.onCellClick = (record) => {
+          n.onCellClick = record => {
             Modal.info({
               iconType: null,
               width: 'auto',
               className: "model-large-img",
               maskClosable: true,
+              okText: "X",
               content: (
-                <div style={{ textAlign: 'center', fontSize: 0 }}>
-                  <Card style={{ display: 'inline-block' }} bodyStyle={{ padding: 0 }}>
-                    <HFImage
-                      imageUrl={record[v.key]}
-                      width={600}
-                      aspectRatio={v.attribute.aspectRatio}
-                      quality={100}
-                      processType={v.attribute.processType}
-                      water={v.attribute.water} />
-                  </Card>
-                </div>
-              ),
+                <HFImage
+                  imageUrl={record[v.key]}
+                  width={600}
+                  aspectRatio={v.attribute.aspectRatio}
+                  quality={100}
+                  processType={v.attribute.processType}
+                  water={v.attribute.water} />
+              )
             });
           };
           break;
@@ -91,11 +97,11 @@ class HFTable extends BaseComponent('HFTable') {
           // 操作列 - 按钮组
           n.className = `action-btn ${ n.className || ''}`;
           n.render = (text, record) => {
-            const newBtnGroup =  typeof v.attribute.btnVisible === "function"
-            ? v.attribute.btnGroup.filter((btn) => v.attribute.btnVisible(record,btn)) 
+            const newBtnGroup = typeof v.attribute.btnVisible === "function"
+            ? v.attribute.btnGroup.filter(btn => v.attribute.btnVisible(record, btn))
             : v.attribute.btnGroup;
             const onClick = v.attribute.onClick;
-            
+
             if (isMobile && newBtnGroup.length > 1) {
               return (
                 <Dropdown trigger={['click']} className='operate-ground-box wap' overlay={
@@ -140,7 +146,7 @@ class HFTable extends BaseComponent('HFTable') {
 
 // 属性类似ant Table组件
 HFTable.propTypes = {
-  isMobile: PropTypes.bool,
+  isMobile: PropTypes.bool
 };
 
 export {

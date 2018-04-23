@@ -41,6 +41,10 @@ $error-color: #f5222d;
   &.nowrap{
     white-space: nowrap;
   }
+  // 展示图片
+  &.img-column{
+    padding: 5px;
+  }
 }
 
 .ant-table .ant-table-tbody>tr>td,
@@ -195,5 +199,52 @@ $error-color: #f5222d;
   /* 最后一行间距为0 */
   >div:nth-last-child(1) {
     margin-bottom: 0;
+  }
+}
+
+// 表格图片点击大图样式
+.ant-modal{
+  &.model-large-img{
+    .ant-modal-body{
+      padding: 0;
+      .ant-confirm-title,
+      .anticon-question-circle{
+        display: none;
+      }
+      .ant-confirm-content{
+        margin: 0;
+        .img-box{
+          text-align: center;
+          font-size: 0;
+        }
+      }
+      .ant-confirm-btns{
+        // 按钮大小
+        $btn-size: 30px;
+        // 字体颜色
+        $btn-color: #fff;
+        // 边线颜色
+        $btn-border-color: #1890ff;
+        // 背景颜色
+        $btn-bg-color: #1890ff;
+        margin: 0;
+        position: absolute;
+        top: (-$btn-size / 2);
+        right: (-$btn-size / 2);
+        .ant-btn{
+          border-radius: 50%;
+          width: $btn-size;
+          height: $btn-size;
+          border: 1px solid $btn-border-color;
+          line-height: ($btn-size - 2);
+          font-size: ($btn-size * 0.6);
+          color: $btn-color;
+          background-color: $btn-bg-color;
+          text-align: center;
+          display: block;
+          padding: 0;
+        }
+      }
+    }
   }
 }

@@ -15,7 +15,7 @@ const EmImgProcessType = {
   emGD_S_S: 6
 };
 
-const computeUrl = (props) => {
+const computeUrl = props => {
   let { imageUrl = '', width, height, quality, processType, aspectRatio, water, waterUrl } = props;
 
   // 图片路径为空，不做处理
@@ -88,12 +88,12 @@ const computeUrl = (props) => {
     // gif的不能加水印
     if (water && imageOption !== '' && fileExtend !== '.gif') {
       // 如果waterUrl没有传值，会得到一个默认的水印
-      imageOption += ossTool.getWatermarkWithPath(waterUrl||'');
+      imageOption += ossTool.getWatermarkWithPath(waterUrl || '');
     }
 
     return imageUrl + imageOption;
   }
-
+console.log('imag:', imageUrl);
   return imageUrl;
 };
 
@@ -104,19 +104,19 @@ class HFImage extends PureComponent {
       return null;
     }
 
-    const { linkUrl = '' } = this.props;
+    const { linkUrl = '', className, style } = this.props;
     if (linkUrl.length > 0) {
       return (
-        <div className="img-box">
+        <div className={`img-box ${className || ""}`} style={style}>
           <a href={linkUrl} target='blank_'>
             <img src={factImageUrl}/>
           </a>
         </div>
       );
     }
-  
+
     return (
-      <div className="img-box">
+      <div className={`img-box ${className || ""}`} style={style}>
         <img src={factImageUrl}/>
       </div>
     );
@@ -147,7 +147,7 @@ HFImage.propTypes = {
 };
 
 // <HFImage
-//   imageUrl='http://wwww.img/com/1458535211448078720150929170217934776_1200x800.jpg'
+//   imageUrl='http://canmeramanHosterPro/20160321/1458535211448078720150929170217934776_1200x800.jpg'
 //   linkUrl='http://www.baidu.com'
 //   width={600}
 //   aspectRatio='3:2'

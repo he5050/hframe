@@ -11,8 +11,8 @@ import OSSClient from "../../utils/oss_client";
 class HFUpload extends BaseComponent('HFUpload') {
   constructor(props, context) {
     super(props, context);
-    const { renderType, mode, keyId, baseDir = 'test' } = this.props;
-    this.oss = new OSSClient(baseDir, renderType, mode, keyId);
+    const { renderType, mode, keyId, baseDir = 'test', custom } = this.props;
+    this.oss = new OSSClient(baseDir, renderType, mode, keyId, custom);
     this.state = {
       previewImage: '',
       previewVisible: false,
@@ -27,7 +27,7 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
 
     let fs = [];
-    if (Object.prototype.toString.call(value) == '[object Array]') {
+    if (Object.prototype.toString.call(value) === '[object Array]') {
       // 数组，表示多个值
       fs = _.map(value, (v, k) => {
         return {
@@ -59,7 +59,7 @@ class HFUpload extends BaseComponent('HFUpload') {
 
   // 配置缩略图地址
   getThumbUrl(url) {
-    console.log('缩略图地址:',url);
+    console.log('缩略图地址:', url);
     const { listType = 'text' } = this.props;
     if (listType === 'text') {
       return null;
@@ -72,14 +72,14 @@ class HFUpload extends BaseComponent('HFUpload') {
         quality: 90,
         processType: EmImgProcessType.emGD_S_S,
         water: false
-      })+'&.jpg';
-      console.log(' 处理后的图片地址',thumbUrl);
+      }) + '&.jpg';
+      console.log(' 处理后的图片地址', thumbUrl);
       return thumbUrl;
     }
   }
 
   // 上传操作
-  onChange = (info) => {
+  onChange = info => {
     let files = [...this.state.files];
     let item = _.find(files, { uid: info.file.uid });
     if (item) {
@@ -93,7 +93,7 @@ class HFUpload extends BaseComponent('HFUpload') {
         uid: info.file.uid,
         name: info.file.name,
         status: info.file.status,
-        url: info.file.response,
+        url: info.file.response
       });
     }
 
@@ -106,15 +106,15 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
   }
 
-  //删除
-  onRemove = (file) => {
+  // 删除
+  onRemove = file => {
     if (file.url) {
       this.oss.deleteFile(file.url);
     }
 
     // 从列表中删除
     this.setState(
-      { files: _.remove([...this.state.files], (o) => { return file.uid !== o.uid; }) },
+      { files: _.remove([...this.state.files], o => { return file.uid !== o.uid; }) },
       () => { this.triggerChange(); }
     );
   }
@@ -130,7 +130,7 @@ class HFUpload extends BaseComponent('HFUpload') {
         }
       }
 
-      if (Object.prototype.toString.call(value) == '[object Array]') {
+      if (Object.prototype.toString.call(value) === '[object Array]') {
         onChange(fs);
       } else {
         onChange(fs[0]);
@@ -141,7 +141,7 @@ class HFUpload extends BaseComponent('HFUpload') {
   // 进度
   onProgress = (e, file) => {
     let files = update(this.state.files, {
-      $apply: (o) => {
+      $apply: o => {
         let item = _.find(o, ['uid', file.uid]);
         if (item) {
           item.percent = e.percent;
@@ -153,14 +153,14 @@ class HFUpload extends BaseComponent('HFUpload') {
   }
 
   // upload操作
-  handUpload = (fs) => {
+  handUpload = fs => {
     const { uploadDir, suffix } = this.props;
-    this.oss.uploadFile(fs.file, uploadDir, suffix, (percentage) => {
-      return (done) => {
+    this.oss.uploadFile(fs.file, uploadDir, suffix, percentage => {
+      return done => {
         fs.onProgress({ percent: Math.floor(percentage * 100) }, fs.file);
         done();
       };
-    }).then((fp) => {
+     }).then(fp => {
       fs.onSuccess(fp, fs.file);
     }).catch(err => {
       console.log('err:', err);
@@ -182,18 +182,18 @@ class HFUpload extends BaseComponent('HFUpload') {
   handleCancel = () => this.setState({ previewVisible: false });
 
   // 点击预览
-  handlePreview = (file) => {
+  handlePreview = file => {
     if (file.url) {
       this.setState({
         previewImage: file.url,
-        previewVisible: true,
+        previewVisible: true
       });
     }
   }
 
   render() {
     const { accept, multiple = false, limit = 99999, listType = 'text', disabled = false, uploadRender } = this.props;
-    console.log('upload',this.state);
+    console.log('upload', this.state);
 
     let ps = {
       accept: accept,
@@ -208,11 +208,11 @@ class HFUpload extends BaseComponent('HFUpload') {
       onRemove: this.onRemove,
       onPreview: this.handlePreview,
       onChange: this.onChange,
-      fileList: this.state.files,
+      fileList: this.state.files
     };
 
     // 显示默认
-    const defaultRender = (fileList) => {
+    const defaultRender = fileList => {
       if (fileList.length >= limit) {
         return null;
       } else {
@@ -277,21 +277,21 @@ HFUpload.propTypes = {
   // 是否展示 uploadList, 可设为一个对象，用于单独设定 showPreviewIcon 和 showRemoveIcon
   showUploadList: PropTypes.oneOfType([
     PropTypes.bool,
-    PropTypes.object,
+    PropTypes.object
   ]),
   // 自定义结构
-  uploadRender: PropTypes.func,
+  uploadRender: PropTypes.func
 };
 
 /**
  * 使用例子
- * 
-  <HFUpload {...this.props} 
-      onChange={this.onChange} 
+ *
+  <HFUpload {...this.props}
+      onChange={this.onChange}
       uploadDir="test"
       suffix="jpg"
-      accept="image/jpeg,image/jpg,image/png" 
-      multiple={false} 
+      accept="image/jpeg,image/jpg,image/png"
+      multiple={false}
       value={['http://123.jpg']}
       limit={2} />
  *

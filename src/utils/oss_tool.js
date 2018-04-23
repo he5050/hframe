@@ -2,13 +2,21 @@ import cryptoTool from './crypto_tool';
 
 const ossTool = {
   // 获取bucket path
-  getOSSCnf(mode, baseDir = 'hjf') {
+  getOSSCnf(mode, baseDir = 'hjf', custom) {
     let ossCnf = {
+      custom: false,
       region: 'oss-cn-shenzhen',
       bucket: 'hjfmytest',
-      hostUrl: '//hjfmytest.oss-cn-shenzhen.aliyuncs.com',
+      hostUrl: '//hjfmytest.oss-cn-shenzhen.aliyuncs.com'
     };
-    
+
+    if (custom) {
+      ossCnf.custom = true;
+      ossCnf.region = custom.region;
+      ossCnf.bucket = custom.bucket;
+      ossCnf.hostUrl = custom.hostUrl;
+    }
+
     if (mode === 'production') { // 产品模式
       ossCnf.baseDir = baseDir;
     } else { // 开发模式
@@ -24,7 +32,7 @@ const ossTool = {
     // if (path.indexOf('hjfmytest.oss-cn-shenzhen.aliyuncs.com') > 0) {
     //   path = path.replace(/hjfmytest.oss-cn-shenzhen.aliyuncs.com/g, 'img.hjfmytest.com');
     // }
-    
+
     if (!path.startsWith('http:') && !path.startsWith('https:')) {
       path = 'http:' + path;
     }
@@ -129,7 +137,7 @@ const ossTool = {
       imageOption += `/quality,q_${quality}`;
     }
     return imageOption;
-  },
+  }
 };
 
 export default ossTool;

@@ -4,7 +4,7 @@ import ossTool from './oss_tool';
 import fetchPack from '../net/fetch';
 
 class OSSClient {
-  constructor(baseDir = 'test', renderType = 'server', mode = 'development', keyId = null) {
+  constructor(baseDir = 'test', renderType = 'server', mode = 'development', keyId = null, custom) {
     if (renderType === 'client') {
       // 本对象的唯一ID,keyId是服务器端生成的,通过shortId.generate(),再结合客户端生成的,保证唯一性
       if (keyId) {
@@ -20,7 +20,7 @@ class OSSClient {
       this.ossClient = null;
       // 配置信息
       this.ossCnf = {
-        ...ossTool.getOSSCnf(mode, baseDir)
+        ...ossTool.getOSSCnf(mode, baseDir, custom)
       };
       // token信息
       this.ossToken = {};
@@ -38,7 +38,7 @@ class OSSClient {
           accessKeyId: resp.data[0].AccessKeyId,
           accessKeySecret: resp.data[0].AccessKeySecret,
           stsToken: resp.data[0].SecurityToken,
-          expiration: resp.data[0].Expiration,
+          expiration: resp.data[0].Expiration
         };
       }
     } catch (error) {
@@ -46,7 +46,7 @@ class OSSClient {
     }
 
     return {
-      success: false,
+      success: false
     };
   }
 
