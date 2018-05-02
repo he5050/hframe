@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import ossTool from '../../utils/oss_tool';
+import ossTool from '../../oss/oss_tool';
 
 /*
  图片处理方式枚举
@@ -93,7 +93,8 @@ const computeUrl = props => {
 
     return imageUrl + imageOption;
   }
-console.log('imag:', imageUrl);
+
+  console.log('imageUrl:', imageUrl);
   return imageUrl;
 };
 

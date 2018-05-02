@@ -1,4 +1,4 @@
-import cryptoTool from './crypto_tool';
+import cryptoTool from '../utils/crypto_tool';
 
 const ossTool = {
   // 获取bucket path

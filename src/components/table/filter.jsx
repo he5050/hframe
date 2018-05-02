@@ -8,7 +8,7 @@ import HFCascader from "../cascader";
  * 筛选类型
  */
 export const FilterItemType = {
-  Custom: 1, //定制组件
+  Custom: 1, // 定制组件
   Search: 2, // 搜索
   DropDown: 3, // 下拉
   DateRange: 4, // 日期范围
@@ -212,9 +212,9 @@ export default class FilterArea extends PureComponent {
     const { configs = [] } = this.props;
 
     // 先进行分行
-    let rows = [],
-      row = [],
-      weight = 0;
+    let rows = [];
+    let row = [];
+    let weight = 0;
     for (let i = 0; i < configs.length; i++) {
       const v = configs[i];
       // 权重值超过3就需要分行了

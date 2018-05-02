@@ -23,6 +23,7 @@ class FetchPack {
         body: JSON.stringify(body)
       });
       respData = await resp.json();
+
       if (respData.status === 500) {
         respData.succ = false;
         respData.msg = respData.message || '';
@@ -33,6 +34,7 @@ class FetchPack {
         respData.msg = respData.message || '';
       }
     } catch (err) {
+      console.log('fetch get post', err);
       respData.succ = false;
       respData.msg = `网络异常:${err}`;
     }
@@ -62,6 +64,7 @@ class FetchPack {
         respData.msg = respData.message || '';
       }
     } catch (err) {
+      console.log('fetch get err', err);
       respData.succ = false;
       respData.msg = `网络异常:${err}`;
     }

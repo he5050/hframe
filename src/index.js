@@ -5,13 +5,13 @@ import toRender from './middleware/render';
 
 import cryptoTool from './utils/crypto_tool';
 import calendar from './utils/calendar';
-import ossTool from './utils/oss_tool';
 import utils from './utils/utils';
 import validation from "./utils/validation";
 import cachePool from './cache/cache_manger';
 import fetchPack from './net/fetch';
 import proxy from './net/proxy';
-import OSSClient from './utils/oss_client';
+import ossTool from './oss/oss_tool';
+import OSSClient from './oss/oss_client';
 
 import HFCascader from './components/cascader';
 import HFImage, { EmImgProcessType, computeUrl } from './components/image';
@@ -41,8 +41,8 @@ export {
 	HFCascader,
 	HFSelect,
 	HFTable,
-	HFFilter, 
-	TabColumnType, 
+	HFFilter,
+	TabColumnType,
 	FilterItemType,
 	HFTree,
 	HFUpload,

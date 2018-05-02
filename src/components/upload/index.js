@@ -3,16 +3,18 @@ import PropTypes from "prop-types";
 import { fromJS, is } from "immutable";
 import update from "react-addons-update";
 import _ from "lodash";
-import { Upload, Icon, Button, Modal } from "antd";
+import { Upload, Icon, Button, Modal, Message } from "antd";
 import BaseComponent from '../../middleware/base_component';
 import HFImage, { EmImgProcessType, computeUrl } from "../image";
-import OSSClient from "../../utils/oss_client";
+import OSSClient from "../../oss/oss_client";
 
 class HFUpload extends BaseComponent('HFUpload') {
   constructor(props, context) {
     super(props, context);
+
     const { renderType, mode, keyId, baseDir = 'test', custom } = this.props;
     this.oss = new OSSClient(baseDir, renderType, mode, keyId, custom);
+
     this.state = {
       previewImage: '',
       previewVisible: false,
@@ -169,12 +171,21 @@ class HFUpload extends BaseComponent('HFUpload') {
   }
 
   // 操作前的检查
-  beforeUpload = () => {
+  beforeUpload = file => {
     const { limit = 99999 } = this.props;
     if (this.state.files.length >= limit) {
       console.log('upload files is limit....', limit);
+      Message.error('上传文件数量超过限制!' + limit);
       return false;
     }
+
+    // 默认10M
+    const { fileSize = 1024 * 1024 * 10 } = this.props;
+      if (file.size > fileSize) {
+        Message.error('上传文件大小超过限制!' + fileSize);
+        return false;
+      }
+
     return true;
   }
 
@@ -270,6 +281,8 @@ HFUpload.propTypes = {
   onChange: PropTypes.func,
   // 数量限制
   limit: PropTypes.number,
+  // 文件大小限制，默认10M
+  fileSize: PropTypes.number,
   // 上传目录
   uploadDir: PropTypes.string.isRequired,
   // 上传保存后缀名
@@ -293,7 +306,9 @@ HFUpload.propTypes = {
       accept="image/jpeg,image/jpg,image/png"
       multiple={false}
       value={['http://123.jpg']}
-      limit={2} />
+      limit={2}
+      fileSize={1024*200} />
+      />
  *
  */
 
