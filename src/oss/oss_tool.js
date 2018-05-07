@@ -50,7 +50,7 @@ const ossTool = {
   },
 
   // 等比例缩放: 固定高度，宽度自适应
-  dealWith_Gd_H_W(height, quality = 100) {
+  dealWith_GD_H_W(height, quality = 100) {
     let imageOption = '';
     if (height === '100%') {
       imageOption = `?x-oss-process=image/auto-orient,0`;

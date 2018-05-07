@@ -6,15 +6,11 @@ import BaseComponent from './base_component';
 import * as actions from './com_action';
 
 /**
- * 
+ *
  * @class AppLoader
  * @extends {BaseComponent('系统')}
  */
 class AppLoader extends BaseComponent('系统') {
-	constructor(props, context) {
-		super(props, context);
-	}
-
 	componentWillMount() {
 		const { name, payload } = this.props;
 		if (!payload['@@require']) {
@@ -29,19 +25,19 @@ class AppLoader extends BaseComponent('系统') {
 		const { name, payload } = nextProps;
 
 		if (!payload['@@require']) {
-			this.props.loadApp(name, this.props.name);
+			this.props.loadApp(name);
 		} else if (this.props.name != nextProps.name) {
 			this.props.clearAppState(this.props.name);
 		}
 	}
 
-	//cxb效率优化点，由主动更新变更为状态比较更新?
+	// 内部组件的更新自己去做比较
 	shouldComponentUpdate(nextProps, nextState) {
 		return true;
 	}
 
 	render() {
-		const { name, payload, ...others }=this.props;
+		const { name, payload, ...others } = this.props;
 		if (!payload['@@require']) {
 			return null;
 		}
@@ -50,7 +46,7 @@ class AppLoader extends BaseComponent('系统') {
 		if (!ReduxConnector) {
 			return null;
 		}
-		
+
 		return (
 			<ReduxConnector store={this.context.store} payload={payload} key={name} {...others}/>
 		);
@@ -65,11 +61,11 @@ export default connect(
 	(state, props) => {
 		const payload = state[props.name];
 		return {
-			payload: payload||{}
+			payload: payload || {}
 		};
 	},
 	dispatch => ({ ...bindActionCreators({ ...actions }, dispatch) }),
-	null, 
+	null,
 	{
 		withRef: true,
 		pure: true

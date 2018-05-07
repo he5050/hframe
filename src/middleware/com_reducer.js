@@ -51,17 +51,17 @@ function loadApp(state, {
         $set: reducerInstance.initState ? reducerInstance.initState() : {}
       }
     });
-    
+
     // 包装组件
     let container = createReduxConnector(
-        component,
-        wrapMapStateToProps(name),
-        wrapMapDispatchToProps(name, actionInstance, reducerInstance),
-        null, {
-          withRef: true,
-          pure: true
-        }
-      );
+      component,
+      wrapMapStateToProps(name),
+      wrapMapDispatchToProps(name, actionInstance, reducerInstance),
+      null, {
+        withRef: true,
+        pure: true
+      }
+    );
 
     // 组件状态
     state = update(state, {
@@ -105,7 +105,7 @@ function reduce(state, {
 }) {
   let oldState = state[name];
   let newState = reducer[type].apply(this, [oldState].concat(payload));
-  
+
   if (typeof newState === "function") {
     newState = newState(injectFunsForReducer);
   }

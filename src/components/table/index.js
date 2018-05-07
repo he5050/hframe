@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import _ from "lodash";
 import { Icon, Modal, Table, Dropdown, Menu } from "antd";
 import BaseComponent from '../../middleware/base_component';
-import HFImage from "../image";
+import HFImage, { EmImgProcessType } from "../image";
+
 import HFFilter, { FilterItemType } from "./filter";
 
 const TabColumnType = {
@@ -48,7 +49,7 @@ class HFTable extends BaseComponent('HFTable') {
       switch (v.type) {
         case TabColumnType.Picture: {
           // 数据为图片时,增加图片列Column
-          n.className = `img-column ${ n.className || ''}`;
+          n.className = `img-column ${n.className || ''}`;
           n.render = text => {
             let imgSize = { height: 40 };
             // 配置图片宽度和高度 如果为空，则默认设置图片高度
@@ -80,9 +81,11 @@ class HFTable extends BaseComponent('HFTable') {
                 <HFImage
                   imageUrl={record[v.key]}
                   width={600}
-                  aspectRatio={v.attribute.aspectRatio}
+                  // aspectRatio={v.attribute.aspectRatio}
+                  aspectRatio='-1 : -1'
                   quality={100}
-                  processType={v.attribute.processType}
+                  // processType={v.attribute.processType}
+                  processType={EmImgProcessType.emGD_W_H}
                   water={v.attribute.water} />
               )
             });
@@ -95,7 +98,7 @@ class HFTable extends BaseComponent('HFTable') {
             n.fixed = 'right';
           }
           // 操作列 - 按钮组
-          n.className = `action-btn ${ n.className || ''}`;
+          n.className = `action-btn ${n.className || ''}`;
           n.render = (text, record) => {
             const newBtnGroup = typeof v.attribute.btnVisible === "function"
             ? v.attribute.btnGroup.filter(btn => v.attribute.btnVisible(record, btn))

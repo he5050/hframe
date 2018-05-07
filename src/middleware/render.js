@@ -21,7 +21,7 @@ export default function toRender(params, initState, routes, l, c) {
   let middleware = [];
   let enhancers = [];
   if (params.mode === 'development') {
-    //middleware.push(logger);
+    // middleware.push(logger);
     middleware.push(crashReporter);
 
     /** Redux DevTools **/
@@ -36,8 +36,8 @@ export default function toRender(params, initState, routes, l, c) {
   let store;
   if (initState) {
     store = createStore(
-      reducer, 
-      initState, 
+      reducer,
+      initState,
       compose(
         applyMiddleware(...middleware),
         ...enhancers
@@ -45,14 +45,14 @@ export default function toRender(params, initState, routes, l, c) {
     );
   } else {
     store = createStore(
-      reducer, 
+      reducer,
       compose(
         applyMiddleware(...middleware),
         ...enhancers
       )
     );
   }
-  
+
   let render;
   if (params.renderType === 'client') {
     // 客户端渲染模型
