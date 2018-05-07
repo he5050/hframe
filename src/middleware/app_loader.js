@@ -11,6 +11,10 @@ import * as actions from './com_action';
  * @extends {BaseComponent('系统')}
  */
 class AppLoader extends BaseComponent('系统') {
+	constructor(props, context) {
+		super(props, context);
+	}
+
 	componentWillMount() {
 		const { name, payload } = this.props;
 		if (!payload['@@require']) {
