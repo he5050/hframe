@@ -1,5 +1,19 @@
 import { bindActionCreators } from 'redux';
 
+function wrapAction(actionCreator, reducer, name) {
+	return (...args) => {
+		return function () {
+			return {
+				name,
+				actionCreator,
+				reducer,
+				args
+			};
+		};
+	};
+}
+
+
 export default function wrapMapDispatchToProps(name, actionCreators, reducer) {
 	const wrapActionCreators = {};
 	const keys = Object.keys(actionCreators);
@@ -11,20 +25,7 @@ export default function wrapMapDispatchToProps(name, actionCreators, reducer) {
 
 	return dispatch => {
 		return {
-			...bindActionCreators(wrapActionCreators, dispatch)
-		};
-	};
-}
-
-function wrapAction(actionCreator, reducer, name) {
-	return (...args) => {
-		return function () {
-			return {
-				name,
-				actionCreator,
-				reducer,
-				args
-			};
+			...bindActionCreators(wrapActionCreators, dispatch),
 		};
 	};
 }

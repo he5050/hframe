@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import ossTool from '../../oss/oss_tool';
-
+import _ from "lodash";
 /*
  图片处理方式枚举
  * */
@@ -28,18 +28,22 @@ const computeUrl = props => {
 
   // 判断后缀，之处理jpg,gif的后缀
   let fileExtend = imageUrl.substring(imageUrl.lastIndexOf('.')).toLowerCase();
-  if (fileExtend === '.jpg' || fileExtend === '.jpeg' || fileExtend === '.gif') {
+  if (fileExtend === '.jpg'
+    || fileExtend === '.jpeg'
+    || fileExtend === '.gif'
+    || fileExtend === '.png'
+  ) {
     // 获取文件后缀名,图片服务只针对jpg类型才有效
     // 根据比例计算
     let factors = aspectRatio.split(':');
-    if (factors[ 0 ] === '-1' || factors[ 1 ] === '-1') {
+    if (factors[0] === '-1' || factors[1] === '-1') {
       width = '100%';
       height = '100%';
     } else {
       if (width) {
-        height = parseInt(width * (parseFloat(factors[ 1 ]) / parseFloat(factors[ 0 ])), 10);
+        height = parseInt(width * (parseFloat(factors[1]) / parseFloat(factors[0])), 10);
       } else if (height) {
-        width = parseInt(height * (parseFloat(factors[ 0 ]) / parseFloat(factors[ 1 ])), 10);
+        width = parseInt(height * (parseFloat(factors[0]) / parseFloat(factors[1])), 10);
       } else {
         console.log('高度或者宽度必须指定一个啊.');
         return '';
@@ -51,7 +55,7 @@ const computeUrl = props => {
     switch (processType) {
       case EmImgProcessType.emGD_H_W: {
         // 等比例缩放: 固定高度，宽度自适应
-        imageOption = ossTool.dealWith_Gd_H_W(height, quality);
+        imageOption = ossTool.dealWith_GD_H_W(height, quality);
         break;
       }
       case EmImgProcessType.emGD_W_H: {
@@ -94,7 +98,6 @@ const computeUrl = props => {
     return imageUrl + imageOption;
   }
 
-  console.log('imageUrl:', imageUrl);
   return imageUrl;
 };
 
@@ -105,25 +108,35 @@ class HFImage extends PureComponent {
       return null;
     }
 
-    const { linkUrl = '', className, style } = this.props;
+    const { linkUrl = '', className, style, onClick } = this.props;
     if (linkUrl.length > 0) {
       return (
-        <div className={`img-box ${className || ""}`} style={style}>
-          <a href={linkUrl} target='blank_'>
-            <img src={factImageUrl}/>
+        <div className={`img-box ${className || ""}`} style={style} onClick={onClick}>
+          <a href={linkUrl} target="blank_">
+            <img src={factImageUrl} alt="" />
           </a>
         </div>
       );
     }
 
     return (
-      <div className={`img-box ${className || ""}`} style={style}>
-        <img src={factImageUrl}/>
+      <div className={`img-box ${className || ""}`} style={style} onClick={onClick}>
+        <img src={factImageUrl} alt="" />
       </div>
     );
   }
 }
 
+HFImage.defaultProps = {
+  imageUrl: '',
+  linkUrl: '',
+  width: 0,
+  height: 0,
+  quality: 90,
+  processType: 0,
+  water: false,
+  waterUrl: ''
+};
 /*
  imageUrl      : 图片地址
  linkUrl       : 链接地址
@@ -138,8 +151,8 @@ class HFImage extends PureComponent {
 HFImage.propTypes = {
   imageUrl: PropTypes.string,
   linkUrl: PropTypes.string,
-  width: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ]),
-  height: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ]),
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   quality: PropTypes.number,
   processType: PropTypes.number,
   aspectRatio: PropTypes.string.isRequired,
@@ -148,7 +161,7 @@ HFImage.propTypes = {
 };
 
 // <HFImage
-//   imageUrl='http://canmeramanHosterPro/20160321/1458535211448078720150929170217934776_1200x800.jpg'
+//   imageUrl='http://img2.jsbn.com/venus/canmeramanHosterPro/20160321/1458535211448078720150929170217934776_1200x800.jpg'
 //   linkUrl='http://www.baidu.com'
 //   width={600}
 //   aspectRatio='3:2'

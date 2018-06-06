@@ -1,4 +1,3 @@
-
 import crypto from "crypto";
 
 const cryptoTool = {
@@ -8,11 +7,11 @@ const cryptoTool = {
     let newPwd = md5.update(password + salt).digest('hex');
     return newPwd;
   },
-  
+
   base64encode(str) {
     let base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     let out, i, len, c1, c2, c3;
-    
+
     i = 0;
     out = "";
     len = str.length;
@@ -37,7 +36,7 @@ const cryptoTool = {
       out += base64EncodeChars.charAt(c3 & 0x3F);
     }
     return out;
-  },
+  }
 };
 
 export default cryptoTool;

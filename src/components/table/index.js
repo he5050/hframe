@@ -4,7 +4,6 @@ import _ from "lodash";
 import { Icon, Modal, Table, Dropdown, Menu } from "antd";
 import BaseComponent from '../../middleware/base_component';
 import HFImage, { EmImgProcessType } from "../image";
-
 import HFFilter, { FilterItemType } from "./filter";
 
 const TabColumnType = {
@@ -46,6 +45,7 @@ class HFTable extends BaseComponent('HFTable') {
       let n = {
         ...v
       };
+
       switch (v.type) {
         case TabColumnType.Picture: {
           // 数据为图片时,增加图片列Column
@@ -67,28 +67,32 @@ class HFTable extends BaseComponent('HFTable') {
                 aspectRatio={v.attribute.aspectRatio}
                 quality={80}
                 processType={v.attribute.processType}
-                water={false} />
+                water={false}
+              />
             );
           };
-          n.onCellClick = record => {
-            Modal.info({
-              iconType: null,
-              width: 'auto',
-              className: "model-large-img",
-              maskClosable: true,
-              okText: "X",
-              content: (
-                <HFImage
-                  imageUrl={record[v.key]}
-                  width={600}
-                  // aspectRatio={v.attribute.aspectRatio}
-                  aspectRatio='-1 : -1'
-                  quality={100}
-                  // processType={v.attribute.processType}
-                  processType={EmImgProcessType.emGD_W_H}
-                  water={v.attribute.water} />
-              )
-            });
+          n.onCell = record => {
+            return {
+              onClick: () => {
+                Modal.info({
+                  iconType: null,
+                  width: 'auto',
+                  className: "model-large-img",
+                  maskClosable: true,
+                  okText: "X",
+                  content: (
+                    <HFImage
+                      imageUrl={record[v.key]}
+                      width={600}
+                      aspectRatio="-1:-1"
+                      quality={100}
+                      processType={EmImgProcessType.emGD_W_H}
+                      water={v.attribute.water}
+                    />
+                  )
+                });
+              }
+            };
           };
           break;
         }
@@ -99,7 +103,7 @@ class HFTable extends BaseComponent('HFTable') {
           }
           // 操作列 - 按钮组
           n.className = `action-btn ${n.className || ''}`;
-          n.render = (text, record) => {
+          n.render = (text, record, index) => {
             const newBtnGroup = typeof v.attribute.btnVisible === "function"
             ? v.attribute.btnGroup.filter(btn => v.attribute.btnVisible(record, btn))
             : v.attribute.btnGroup;
@@ -107,38 +111,45 @@ class HFTable extends BaseComponent('HFTable') {
 
             if (isMobile && newBtnGroup.length > 1) {
               return (
-                <Dropdown trigger={['click']} className='operate-ground-box wap' overlay={
-                  <Menu prefixCls="operate-ground-menu">
-                    {
-                      _.map(newBtnGroup, (v, k) => {
-                        return (
-                          <Menu.Item key={k}>
-                            <a className={v.className} onClick={() => { onClick && onClick(record, v); }}>{v.name}</a>
-                          </Menu.Item>
-                        );
-                      })
-                    }
-                  </Menu>
-                }>
+                <Dropdown
+                  trigger={['click']}
+                  className="operate-ground-box wap"
+                  overlay={
+                    <Menu prefixCls="operate-ground-menu">
+                      {
+                        _.map(newBtnGroup, (vv, kk) => {
+                          return (
+                            <Menu.Item key={kk}>
+                              <a className={vv.className} onClick={() => { onClick && onClick(record, vv, index); }}>{vv.name}</a>
+                            </Menu.Item>
+                          );
+                        })
+                      }
+                    </Menu>
+                  }
+                >
                   <a className="ant-dropdown-link" href="#">
                     更多<Icon type="down" />
                   </a>
                 </Dropdown>
               );
-            } else {
-              return (
-                <span className={`operate-ground-box ${isMobile ? 'wap' : 'web'}`}>
-                  {
-                    _.map(newBtnGroup, (v, k) => {
-                      return (
-                        <a key={k} className={v.className} onClick={() => { onClick && onClick(record, v); }}>{v.name}</a>
-                      );
-                    })
-                  }
-                </span>
-              );
             }
+
+            return (
+              <span className={`operate-ground-box ${isMobile ? 'wap' : 'web'}`}>
+                {
+                  _.map(newBtnGroup, (vv, kk) => {
+                    return (
+                      <a key={kk} className={vv.className} onClick={() => { onClick && onClick(record, vv, index); }}>{vv.name}</a>
+                    );
+                  })
+                }
+              </span>
+            );
           };
+          break;
+        }
+        default: {
           break;
         }
       }

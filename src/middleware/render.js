@@ -9,9 +9,9 @@ const crashReporter = store => next => action => {
   try {
     return next(action);
   } catch (err) {
-    console.error('Caught an exception:[', err, ']');
-    console.error('Action:[', action, ']');
-    console.error('State:[', store.getState(), ']');
+    console.error('捕捉到一个异常:[', err, ']');
+    console.error('动作:[', action, ']');
+    console.error('状态:[', store.getState(), ']');
     throw err;
   }
 };
@@ -21,10 +21,9 @@ export default function toRender(params, initState, routes, l, c) {
   let middleware = [];
   let enhancers = [];
   if (params.mode === 'development') {
-    // middleware.push(logger);
     middleware.push(crashReporter);
 
-    /** Redux DevTools **/
+    // Redux DevTools
     if (params.renderType === 'client') {
       if (typeof devToolsExtension === 'function') {
         enhancers.push(devToolsExtension());
@@ -72,9 +71,9 @@ export default function toRender(params, initState, routes, l, c) {
       store.dispatch({
         type: '@@loadApp',
         payload: {
-          names: [...params.tigNames]
-        }}
-      );
+          names: [...params.tigNames],
+        }
+      });
     }
 
     render = (

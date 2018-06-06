@@ -11,7 +11,13 @@ export default () => {
         <div className="content-block">
           <h1>404</h1>
           <div className="desc">抱歉,访问出错！</div>
-          <div className="btn"><a href="/"><Button type="primary"><span>返回首页</span></Button></a></div>
+          <div className="btn">
+            <a href="/">
+              <Button type="primary">
+                <span>返回首页</span>
+              </Button>
+            </a>
+          </div>
         </div>
       </div>
     </div>

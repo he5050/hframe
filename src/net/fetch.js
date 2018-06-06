@@ -1,5 +1,3 @@
-//  请求方法
-
 import fetch from "isomorphic-fetch";
 
 class FetchPack {

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { fromJS, is } from "immutable";
 import update from "react-addons-update";
 import _ from "lodash";
-import { Upload, Icon, Button, Modal, Message } from "antd";
+import { Upload, Icon, Button, Modal, message } from "antd";
 import BaseComponent from '../../middleware/base_component';
 import HFImage, { EmImgProcessType, computeUrl } from "../image";
 import OSSClient from "../../oss/oss_client";
@@ -11,10 +11,8 @@ import OSSClient from "../../oss/oss_client";
 class HFUpload extends BaseComponent('HFUpload') {
   constructor(props, context) {
     super(props, context);
-
     const { renderType, mode, keyId, baseDir = 'test', custom } = this.props;
     this.oss = new OSSClient(baseDir, renderType, mode, keyId, custom);
-
     this.state = {
       previewImage: '',
       previewVisible: false,
@@ -22,7 +20,6 @@ class HFUpload extends BaseComponent('HFUpload') {
     };
   }
 
-  // 处理
   dealWith(value) {
     if (!value) {
       return [];
@@ -61,26 +58,23 @@ class HFUpload extends BaseComponent('HFUpload') {
 
   // 配置缩略图地址
   getThumbUrl(url) {
-    console.log('缩略图地址:', url);
     const { listType = 'text' } = this.props;
     if (listType === 'text') {
       return null;
-    } else {
-      // TODO:antd3.3.1的一个bug，结尾如果不是以jpg结尾的话会当成文件处理
-      let thumbUrl = computeUrl({
-        imageUrl: url,
-        width: 100,
-        aspectRatio: '1:1',
-        quality: 90,
-        processType: EmImgProcessType.emGD_S_S,
-        water: false
-      }) + '&.jpg';
-      console.log(' 处理后的图片地址', thumbUrl);
-      return thumbUrl;
     }
+
+    let thumbUrl = computeUrl({
+      imageUrl: url,
+      width: 100,
+      aspectRatio: '1:1',
+      quality: 90,
+      processType: EmImgProcessType.emGD_L_S,
+      water: false
+    });
+
+    return thumbUrl;
   }
 
-  // 上传操作
   onChange = info => {
     let files = [...this.state.files];
     let item = _.find(files, { uid: info.file.uid });
@@ -108,7 +102,6 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
   }
 
-  // 删除
   onRemove = file => {
     if (file.url) {
       this.oss.deleteFile(file.url);
@@ -121,7 +114,6 @@ class HFUpload extends BaseComponent('HFUpload') {
     );
   }
 
-  // change
   triggerChange = () => {
     const { onChange, value } = this.props;
     if (onChange) {
@@ -140,7 +132,6 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
   }
 
-  // 进度
   onProgress = (e, file) => {
     let files = update(this.state.files, {
       $apply: o => {
@@ -154,7 +145,6 @@ class HFUpload extends BaseComponent('HFUpload') {
     this.setState({ files });
   }
 
-  // upload操作
   handUpload = fs => {
     const { uploadDir, suffix } = this.props;
     this.oss.uploadFile(fs.file, uploadDir, suffix, percentage => {
@@ -162,7 +152,7 @@ class HFUpload extends BaseComponent('HFUpload') {
         fs.onProgress({ percent: Math.floor(percentage * 100) }, fs.file);
         done();
       };
-     }).then(fp => {
+    }).then(fp => {
       fs.onSuccess(fp, fs.file);
     }).catch(err => {
       console.log('err:', err);
@@ -170,21 +160,19 @@ class HFUpload extends BaseComponent('HFUpload') {
     });
   }
 
-  // 操作前的检查
   beforeUpload = file => {
     const { limit = 99999 } = this.props;
     if (this.state.files.length >= limit) {
-      console.log('upload files is limit....', limit);
-      Message.error('上传文件数量超过限制!' + limit);
+      message.error(`上传文件数量超过限制!${limit}`);
       return false;
     }
 
     // 默认10M
     const { fileSize = 1024 * 1024 * 10 } = this.props;
-      if (file.size > fileSize) {
-        Message.error('上传文件大小超过限制!' + fileSize);
-        return false;
-      }
+    if (file.size > fileSize) {
+      message.error(`上传文件大小超过限制!${fileSize}`);
+      return false;
+    }
 
     return true;
   }
@@ -204,8 +192,6 @@ class HFUpload extends BaseComponent('HFUpload') {
 
   render() {
     const { accept, multiple = false, limit = 99999, listType = 'text', disabled = false, uploadRender } = this.props;
-    console.log('upload', this.state);
-
     let ps = {
       accept: accept,
       multiple: multiple,
@@ -221,30 +207,28 @@ class HFUpload extends BaseComponent('HFUpload') {
       onChange: this.onChange,
       fileList: this.state.files
     };
-
-    // 显示默认
     const defaultRender = fileList => {
-      if (fileList.length >= limit) {
+      if (fileList.length >= limit || disabled) {
         return null;
-      } else {
-        switch (listType) {
-          case 'picture-card': {
-            return (
-              <div>
-                <Icon type="plus" />
-                <div>点击上传</div>
-              </div>
-            );
-          }
-          case 'picture':
-          case 'text':
-          default: {
-            return (
-              <Button>
-                <Icon type="upload" /> 点击上传
-              </Button>
-            );
-          }
+      }
+
+      switch (listType) {
+        case 'picture-card': {
+          return (
+            <div>
+              <Icon type="plus" />
+              <div>点击上传</div>
+            </div>
+          );
+        }
+        case 'picture':
+        case 'text':
+        default: {
+          return (
+            <Button>
+              <Icon type="upload" /> 点击上传
+            </Button>
+          );
         }
       }
     };
@@ -260,10 +244,11 @@ class HFUpload extends BaseComponent('HFUpload') {
           <HFImage
             imageUrl={this.state.previewImage}
             width={500}
-            aspectRatio='3:2'
+            aspectRatio="3:2"
             quality={90}
             processType={EmImgProcessType.emGD_L_S}
-            water={false} />
+            water={false}
+          />
         </Modal>
       </div>
     );
@@ -308,7 +293,6 @@ HFUpload.propTypes = {
       value={['http://123.jpg']}
       limit={2}
       fileSize={1024*200} />
-      />
  *
  */
 

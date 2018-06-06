@@ -1,4 +1,4 @@
-class AppFactory {
+class FactoryApp {
   constructor() {
     this.apps = {};
   }
@@ -13,7 +13,7 @@ class AppFactory {
   registerApps(apps) {
     this.apps = {
       ...this.apps,
-      ...apps
+      ...apps,
     };
   }
 
@@ -30,5 +30,5 @@ class AppFactory {
   }
 }
 
-const appFactoryInstance = new AppFactory();
-export default appFactoryInstance;
+const factoryApp = new FactoryApp();
+export default factoryApp;

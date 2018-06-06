@@ -4,20 +4,20 @@ export default class Cache {
   }
 
   set(key, value, expire) {
-    this.cache[ key ] = {
+    this.cache[key] = {
       value: value,
       expire: expire,
-      insertTime: +new Date()
+      insertTime: +new Date(),
     };
   }
 
   get(key) {
-    const cNode = this.cache[ key ];
+    const cNode = this.cache[key];
     if (!cNode) {
       return null;
     }
 
-    const { insertTime, expire, value  } = cNode;
+    const { insertTime, expire, value } = cNode;
     if (!expire) {
       // 如果不存在过期时间
       return value;
@@ -29,13 +29,13 @@ export default class Cache {
       return value;
     }
 
-    delete this.cache[ key ];
+    delete this.cache[key];
 
     return null;
   }
 
   clearWithKey(key) {
-    delete this.cache[ key ];
+    delete this.cache[key];
   }
 
   clear() {

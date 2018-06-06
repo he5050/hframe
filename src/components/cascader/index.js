@@ -6,34 +6,35 @@ import utils from '../../utils/utils';
 import fetchPack from '../../net/fetch';
 import BaseComponent from '../../middleware/base_component';
 
-export default class HFCascader extends BaseComponent('HFCascader')  {
+export default class HFCascader extends BaseComponent('HFCascader') {
   constructor(props, context) {
     super(props, context);
     this.option = {
       pageIndex: 1,
-      pageSize: 1000,
+      pageSize: 1000
     };
     this.state = {
       options: []
     };
   }
-  
-  onChange = (v) => { 
+
+  onChange = v => {
     // 方便外部获取名称
     this.props.onChange(v);
   }
 
   componentDidMount() {
-    console.log('HFCascader componentDidMount......');
-    this.cascaderFetch(this.props).then(options => {
-      this.setState({options: options});
+    this.cascaderFetch(this.props)
+    .then(options => {
+      this.setState({ options: options });
     });
   }
 
   componentWillReceiveProps(nextProps) {
     if (!is(fromJS(this.props.value), fromJS(nextProps.value))) {
-      this.cascaderFetch(nextProps).then(options => {
-        this.setState({options: options});
+      this.cascaderFetch(nextProps)
+      .then(options => {
+        this.setState({ options: options });
       });
     }
   }
@@ -53,7 +54,7 @@ export default class HFCascader extends BaseComponent('HFCascader')  {
   }
 
   async cascaderFetch(props) {
-    const { configs=[], value=[] } = props;
+    const { configs = [], value = [] } = props;
     if (configs.length === 0) {
       return [];
     }
@@ -65,10 +66,10 @@ export default class HFCascader extends BaseComponent('HFCascader')  {
     let cLen = configs.length;
     for (let k = 0; k < cLen; k++) {
       let v = configs[k];
-      let isLeaf = cLen > k+1 ? false : true;
+      let isLeaf = !(cLen > k + 1);
       let resp = {};
-      if (k && value[k-1]) {
-        let f = _.findIndex(options, function(o) { return o.value == value[k-1]; });
+      if (k && value[k - 1]) {
+        let f = _.findIndex(options, o => { return o.value === value[k - 1]; });
         if (f > -1) {
           // 找到了父项，判断父项里面有没有叶子节点
           if (options[f].children && options[f].children.length > 0) {
@@ -76,20 +77,19 @@ export default class HFCascader extends BaseComponent('HFCascader')  {
           }
 
           // 请求子几点数据
-          resp = await this.fetchData(v.dataUrl, { [configs[k].searchKey]: value[k-1] });
+          resp = await this.fetchData(v.dataUrl, { [configs[k].searchKey]: value[k - 1] });
           options[f] = {
             ...options[f],
             loading: false,
-            children: _.map(resp.data, (value) => {
+            children: _.map(resp.data, va => {
               return {
-                value: value.id,
-                label: value.name,
+                value: va.id,
+                label: va.name,
                 index: 1,
                 isLeaf
               };
             })
           };
-          console.log(k, f, value[k-1], options);
         }
       } else if (k === 0) {
         // 已经有值的情况下不做处理
@@ -98,10 +98,10 @@ export default class HFCascader extends BaseComponent('HFCascader')  {
         }
 
         resp = await this.fetchData(v.dataUrl, {});
-        options = _.map(resp.data, (v) => {
+        options = _.map(resp.data, va => {
           return {
-            value: v.id,
-            label: v.name,
+            value: va.id,
+            label: va.name,
             index: 1,
             isLeaf
           };
@@ -120,18 +120,19 @@ export default class HFCascader extends BaseComponent('HFCascader')  {
    *  searchKey: '',
    * }
    */
-  loadData = (selectedOptions) => {
-    const { configs=[] } = this.props;
+  loadData = selectedOptions => {
+    const { configs = [] } = this.props;
     const targetOption = selectedOptions[selectedOptions.length - 1];
     // 获取触发的index
-    let isLeaf = configs.length > targetOption.index+1 ? false : true;
+    let isLeaf = !(configs.length > targetOption.index + 1);
     let index = targetOption.index + 1;
     targetOption.loading = true;
     // 请求下一级的数据是根据搜索key加上具体的值
-    this.fetchData(configs[index-1].dataUrl, { [configs[index-1].searchKey]: targetOption.value }).then(resp => {
-      if(resp.succ) {
+    this.fetchData(configs[index - 1].dataUrl, { [configs[index - 1].searchKey]: targetOption.value })
+    .then(resp => {
+      if (resp.succ) {
         targetOption.loading = false;
-        targetOption.children = _.map(resp.data, (v) => {
+        targetOption.children = _.map(resp.data, v => {
           return {
             value: v.id,
             label: v.name,
@@ -139,8 +140,6 @@ export default class HFCascader extends BaseComponent('HFCascader')  {
             isLeaf
           };
         });
-        // 强制刷新
-        //this.forceUpdate();
       }
     });
   }
@@ -163,4 +162,3 @@ export default class HFCascader extends BaseComponent('HFCascader')  {
     );
   }
 }
-

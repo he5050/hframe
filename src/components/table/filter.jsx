@@ -1,3 +1,4 @@
+// 样式文件加载
 import React, { PureComponent } from "react";
 import _ from "lodash";
 import { Form, Row, Col, Input, Select, DatePicker, Button, Icon, Radio } from "antd";
@@ -34,7 +35,6 @@ export default class FilterArea extends PureComponent {
     for (const v of configs) {
       // 如果筛选条件有默认值， 则默认为展开
       if (v.attribute.initValue) {
-        console.log("v", v);
         return true;
       }
     }
@@ -54,28 +54,30 @@ export default class FilterArea extends PureComponent {
         // 查询key的初始值
         return (
           <Form.Item label={label}>
-            {getFieldDecorator(node.fieldKey, {
-              initialValue: initValue,
-              ...(fieldOptions || {})
-            })(<Input {...other} />)}
+            {
+              getFieldDecorator(node.fieldKey, {
+                initialValue: initValue,
+                ...(fieldOptions || {})
+              })(
+                <Input {...other} />
+              )
+            }
           </Form.Item>
         );
       }
       // 日期范围
       case FilterItemType.DateRange: {
-        const {
-          label,
-          initValue,
-          fieldOptions,
-          extraOptions,
-          ...other
-        } = node.attribute;
+        const { label, initValue, fieldOptions, extraOptions, ...other } = node.attribute;
         return (
           <Form.Item label={label}>
-            {getFieldDecorator(node.fieldKey, {
-              initialValue: initValue,
-              ...(fieldOptions || {})
-            })(<DatePicker.RangePicker {...extraOptions} {...other} />)}
+            {
+              getFieldDecorator(node.fieldKey, {
+                initialValue: initValue,
+                ...(fieldOptions || {})
+              })(
+               <DatePicker.RangePicker {...extraOptions} {...other} />
+              )
+            }
           </Form.Item>
         );
       }
@@ -89,10 +91,14 @@ export default class FilterArea extends PureComponent {
         } = node.attribute;
         return (
           <Form.Item label={label}>
-            {getFieldDecorator(node.fieldKey, {
-              initialValue: initValue,
-              ...(fieldOptions || {})
-            })(<DatePicker {...other} {...extraOptions} />)}
+            {
+              getFieldDecorator(node.fieldKey, {
+                initialValue: initValue,
+                ...(fieldOptions || {})
+              })(
+                <DatePicker {...other} {...extraOptions} />
+              )
+            }
           </Form.Item>
         );
       }
@@ -106,20 +112,24 @@ export default class FilterArea extends PureComponent {
         } = node.attribute;
         return (
           <Form.Item label={label}>
-            {getFieldDecorator(node.fieldKey, {
-              initialValue: initValue,
-              ...(fieldOptions || {})
-            })(
-              <Select {...other}>
-                {_.map(options, (v, k) => {
-                  return (
-                    <Select.Option key={k} value={v.value}>
-                      {v.name}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            )}
+            {
+              getFieldDecorator(node.fieldKey, {
+                initialValue: initValue,
+                ...(fieldOptions || {})
+              })(
+                <Select {...other}>
+                  {
+                    _.map(options, (v, k) => {
+                      return (
+                        <Select.Option key={k} value={v.value}>
+                          {v.name}
+                        </Select.Option>
+                      );
+                    })
+                  }
+                </Select>
+              )
+            }
           </Form.Item>
         );
       }
@@ -127,10 +137,14 @@ export default class FilterArea extends PureComponent {
         const { label, initValue, fieldOptions, ...other } = node.attribute;
         return (
           <Form.Item label={label}>
-            {getFieldDecorator(node.fieldKey, {
-              initialValue: initValue,
-              ...(fieldOptions || {})
-            })(<HFSelect {...other} />)}
+            {
+              getFieldDecorator(node.fieldKey, {
+                initialValue: initValue,
+                ...(fieldOptions || {})
+              })(
+                <HFSelect {...other} />
+              )
+            }
           </Form.Item>
         );
       }
@@ -138,39 +152,44 @@ export default class FilterArea extends PureComponent {
         const { label, initValue, fieldOptions, ...other } = node.attribute;
         return (
           <Form.Item label={label}>
-            {getFieldDecorator(node.fieldKey, {
-              initialValue: initValue,
-              ...(fieldOptions || {})
-            })(<HFCascader {...other} />)}
+            {
+              getFieldDecorator(node.fieldKey, {
+                initialValue: initValue,
+                ...(fieldOptions || {})
+              })(
+                <HFCascader {...other} />
+              )
+            }
           </Form.Item>
         );
       }
       case FilterItemType.Radio: {
-        const {
-          label,
-          initValue,
-          fieldOptions,
-          options,
-          ...other
-        } = node.attribute;
+        const { label, initValue, fieldOptions, options, ...other } = node.attribute;
         return (
           <Form.Item label={label}>
-            {getFieldDecorator(node.fieldKey, {
-              initialValue: initValue,
-              ...(fieldOptions || {})
-            })(
-              <Radio.Group {...other}>
-                {_.map(options, (v, k) => {
-                  return (
-                    <Radio key={k} value={`${v.value}`}>
-                      {v.name}
-                    </Radio>
-                  );
-                })}
-              </Radio.Group>
-            )}
+            {
+              getFieldDecorator(node.fieldKey, {
+                initialValue: initValue,
+                ...(fieldOptions || {})
+              })(
+                <Radio.Group {...other}>
+                  {
+                    _.map(options, (v, k) => {
+                      return (
+                        <Radio key={k} value={`${v.value}`}>
+                          {v.name}
+                        </Radio>
+                      );
+                    })
+                  }
+                </Radio.Group>
+              )
+            }
           </Form.Item>
         );
+      }
+      default: {
+        break;
       }
     }
   }
@@ -237,67 +256,68 @@ export default class FilterArea extends PureComponent {
       let spanSum = 0;
       return (
         <Row gutter={48} className="one-row">
-          {_.map(rows[0], (vv, kk) => {
-            spanSum += vv.weight * 8;
-            return (
-              <Col key={kk} span={vv.weight * 8}>
-                {this.generator(vv)}
-              </Col>
-            );
-          })}
+          {
+            _.map(rows[0], (vv, kk) => {
+              spanSum += vv.weight * 8;
+              return (
+                <Col key={kk} span={vv.weight * 8}>
+                  {this.generator(vv)}
+                </Col>
+              );
+            })
+          }
           <Col key="filter-button" span={24 - spanSum}>
-            <div key={"filter-button"} className="filter-button">
+            <div key="filter-button" className="filter-button">
               <span className="button-group">
-                <Button type="primary" onClick={this.onFilter}>
-                  查询
-                </Button>
+                <Button type="primary" onClick={this.onFilter}>查询</Button>
                 <Button onClick={this.onReset}>重置</Button>
               </span>
             </div>
           </Col>
         </Row>
       );
-    } else {
-      let style = this.state.unfold ? undefined : { display: "none" };
-      let content = _.map(rows, (v, k) => {
-        return (
-          <Row key={k} style={k >= 1 ? style : undefined} gutter={48}>
-            {_.map(v, (vv, kk) => {
+    }
+
+    let style = this.state.unfold ? undefined : { display: "none" };
+    let content = _.map(rows, (v, k) => {
+      return (
+        <Row key={k} style={k >= 1 ? style : undefined} gutter={48}>
+          {
+            _.map(v, (vv, kk) => {
               return (
                 <Col key={kk} span={vv.weight * 8}>
                   {this.generator(vv)}
                 </Col>
               );
-            })}
-          </Row>
-        );
-      });
-      content.push(
-        <div key={"filter-button"} className="filter-button align-right">
-          <span className="button-group">
-            <Button type="primary" onClick={this.onFilter}>
-              查询
-            </Button>
-            <Button onClick={this.onReset}>重置</Button>
-            {rows.length > 1 && (
+            })
+          }
+        </Row>
+      );
+    });
+    content.push(
+      <div key="filter-button" className="filter-button align-right">
+        <span className="button-group">
+          <Button type="primary" onClick={this.onFilter}>查询</Button>
+          <Button onClick={this.onReset}>重置</Button>
+          {
+            rows.length > 1 && (
               <a onClick={this.onSwitchUnfold}>
                 {this.state.unfold ? "折叠" : "展开"}
                 <Icon type={this.state.unfold ? "up" : "down"} />
               </a>
-            )}
-          </span>
-        </div>
-      );
-      return content;
-    }
+            )
+          }
+        </span>
+      </div>
+    );
+
+    return content;
   }
 
   render() {
     return (
-      <Form
-        className={`u-table-filter ${this.props.className || ""} title-length-${
-          this.props.labelLength
-        }`}
+      <Form className={`u-table-filter ${this.props.className || ""}
+        title-length-${this.props.labelLength}`}
         layout="inline"
       >
         {this.dealWith()}

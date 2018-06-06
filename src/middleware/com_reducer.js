@@ -3,22 +3,6 @@ import wrapMapStateToProps from './wrap_map_state_to_props';
 import wrapMapDispatchToProps from './wrap_map_dispatch_to_props';
 import createReduxConnector from './create_redux_connector';
 
-export default function (state = {}, {
-  type,
-  payload
-}) {
-  switch (type) {
-    case "@@loadAppReal":
-      return loadApp(state, payload);
-    case "@@reduce":
-      return reduce(state, payload);
-    case "@@clearAppState":
-      return clearAppState(state, payload);
-    default:
-      return state;
-  }
-}
-
 function loadApp(state, {
   name,
   appInfo,
@@ -29,7 +13,7 @@ function loadApp(state, {
   if (!state[name]) {
     // 如果活动器是一个函数，通过调用函数得到一个实例对象
     let actionInstance = action;
-    if (typeof action == 'function') {
+    if (typeof action === 'function') {
       actionInstance = action({
         appInfo,
         name
@@ -38,7 +22,7 @@ function loadApp(state, {
 
     // 如果减速器是一个函数，通过调用函数得到一个实例对象
     let reducerInstance = reducer;
-    if (typeof reducer == 'function') {
+    if (typeof reducer === 'function') {
       reducerInstance = reducer({
         appInfo,
         name
@@ -54,14 +38,15 @@ function loadApp(state, {
 
     // 包装组件
     let container = createReduxConnector(
-      component,
-      wrapMapStateToProps(name),
-      wrapMapDispatchToProps(name, actionInstance, reducerInstance),
-      null, {
-        withRef: true,
-        pure: true
-      }
-    );
+        component,
+        wrapMapStateToProps(name),
+        wrapMapDispatchToProps(name, actionInstance, reducerInstance),
+        null,
+        {
+          withRef: true,
+          pure: true
+        }
+      );
 
     // 组件状态
     state = update(state, {
@@ -86,8 +71,9 @@ function loadApp(state, {
 function clearAppState(state, {
   name
 }) {
-  if (!state[name])
+  if (!state[name]) {
     return state;
+  }
 
   return update(state, {
     [name]: {
@@ -115,4 +101,20 @@ function reduce(state, {
       $set: newState
     }
   });
+}
+
+export default function (state = {}, {
+  type,
+  payload
+}) {
+  switch (type) {
+    case "@@loadAppReal":
+      return loadApp(state, payload);
+    case "@@reduce":
+      return reduce(state, payload);
+    case "@@clearAppState":
+      return clearAppState(state, payload);
+    default:
+      return state;
+  }
 }

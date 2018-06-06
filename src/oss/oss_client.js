@@ -64,7 +64,7 @@ class OSSClient {
     // 判断token是否过期
     if (expiration) {
       // 取得过期时间差
-      let ex = parseInt(((new Date(expiration)).getTime() - (new Date()).getTime()) / 1000);
+      let ex = Number(((new Date(expiration)).getTime() - (new Date()).getTime()) / 1000);
       if (ex < 300) {
         ossToken = await this.getOSSToken();
       } else {

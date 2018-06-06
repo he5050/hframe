@@ -5,12 +5,7 @@ import { bindActionCreators } from 'redux';
 import BaseComponent from './base_component';
 import * as actions from './com_action';
 
-/**
- *
- * @class AppLoader
- * @extends {BaseComponent('系统')}
- */
-class AppLoader extends BaseComponent('系统') {
+class AppLoader extends BaseComponent('基础') {
 	constructor(props, context) {
 		super(props, context);
 	}
@@ -27,15 +22,14 @@ class AppLoader extends BaseComponent('系统') {
 
 	componentWillReceiveProps(nextProps) {
 		const { name, payload } = nextProps;
-
 		if (!payload['@@require']) {
 			this.props.loadApp(name);
-		} else if (this.props.name != nextProps.name) {
+		} else if (this.props.name !== nextProps.name) {
 			this.props.clearAppState(this.props.name);
 		}
 	}
 
-	// 内部组件的更新自己去做比较
+	// 因为状态和属性结构很复杂，这里不做比较直接返回true，内部组件自己去做比较
 	shouldComponentUpdate(nextProps, nextState) {
 		return true;
 	}
@@ -52,7 +46,7 @@ class AppLoader extends BaseComponent('系统') {
 		}
 
 		return (
-			<ReduxConnector store={this.context.store} payload={payload} key={name} {...others}/>
+			<ReduxConnector store={this.context.store} payload={payload} key={name} {...others} />
 		);
 	}
 }

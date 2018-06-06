@@ -2,12 +2,11 @@ import cryptoTool from '../utils/crypto_tool';
 
 const ossTool = {
   // 获取bucket path
-  getOSSCnf(mode, baseDir = 'hjf', custom) {
+  getOSSCnf(mode, baseDir = 'test', custom) {
     let ossCnf = {
       custom: false,
       region: 'oss-cn-shenzhen',
-      bucket: 'hjfmytest',
-      hostUrl: '//hjfmytest.oss-cn-shenzhen.aliyuncs.com'
+      baseDir: baseDir
     };
 
     if (custom) {
@@ -15,12 +14,14 @@ const ossTool = {
       ossCnf.region = custom.region;
       ossCnf.bucket = custom.bucket;
       ossCnf.hostUrl = custom.hostUrl;
-    }
-
-    if (mode === 'production') { // 产品模式
-      ossCnf.baseDir = baseDir;
-    } else { // 开发模式
-      ossCnf.baseDir = `test/${baseDir}`;
+    } else {
+      if (mode === 'production') { // 产品模式
+        ossCnf.bucket = 'hjfmytest';
+        ossCnf.hostUrl = '//hjfmytest.oss-cn-shenzhen.aliyuncs.com';
+      } else { // 开发模式
+        ossCnf.bucket = 'hjfmytest-test';
+        ossCnf.hostUrl = '//hjf-test.oss-cn-shenzhen.aliyuncs.com';
+      }
     }
 
     return ossCnf;
@@ -28,14 +29,22 @@ const ossTool = {
 
   // 处理路径
   dealWithURL(path) {
-    // 绑定域名服务
-    // if (path.indexOf('hjfmytest.oss-cn-shenzhen.aliyuncs.com') > 0) {
-    //   path = path.replace(/hjfmytest.oss-cn-shenzhen.aliyuncs.com/g, 'img.hjfmytest.com');
-    // }
-
-    if (!path.startsWith('http:') && !path.startsWith('https:')) {
-      path = 'http:' + path;
+    if (path.indexOf('jmdigit.oss-cn-shenzhen.aliyuncs.com') > 0) {
+      path = path.replace(/jmdigit.oss-cn-shenzhen.aliyuncs.com/g, 'img.jmdigit.com');
+      if (!path.startsWith('http:') && !path.startsWith('https:')) {
+        path = `https:${path}`;
+      }
+    } else if (path.indexOf('jmdigit-test.oss-cn-shenzhen.aliyuncs.com') > 0) {
+      path = path.replace(/jmdigit-test.oss-cn-shenzhen.aliyuncs.com/g, 'testimg.jmdigit.com');
+      if (!path.startsWith('http:') && !path.startsWith('https:')) {
+        path = `https:${path}`;
+      }
+    } else {
+      if (!path.startsWith('http:') && !path.startsWith('https:')) {
+        path = `http:${path}`;
+      }
     }
+
     return path;
   },
 

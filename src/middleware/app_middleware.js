@@ -1,6 +1,6 @@
 import appFactory from './app_factory';
 
-export default () => (store) => {
+export default () => store => {
 	return next => action => {
 		const { getState, dispatch } = store;
 		if (typeof action === 'function') {
@@ -16,7 +16,7 @@ export default () => (store) => {
 					}
 				});
 			};
-			
+
 			actionCreator(...args)({
 				currentApp: {
 					name
@@ -25,7 +25,7 @@ export default () => (store) => {
 				reduce,
 				getState: () => getState()[name]
 			});
-		} else if (action.type && action.type == '@@loadApp') {
+		} else if (action.type && action.type === '@@loadApp') {
 			try {
 				const { names = [] } = action.payload;
 				for (let i = 0; i < names.length; i++) {

@@ -9,7 +9,7 @@ class HFTree extends BaseComponent('HFTree') {
     this.state = {
       expandedKeys: [],
       autoExpandParent: true,
-      checkedKeys: this.props.checkedKeys,
+      checkedKeys: this.props.checkedKeys
     };
   }
 
@@ -17,14 +17,14 @@ class HFTree extends BaseComponent('HFTree') {
     this.setState({ checkedKeys: nextProps.checkedKeys });
   }
 
-  onExpand = (expandedKeys) => {
+  onExpand = expandedKeys => {
     this.setState({
       expandedKeys,
-      autoExpandParent: false,
+      autoExpandParent: false
     });
   }
 
-  onCheck = (checkedKeys) => {
+  onCheck = checkedKeys => {
     this.setState({ checkedKeys });
     if (this.props.onChange) {
       this.props.onChange(checkedKeys);
@@ -32,7 +32,7 @@ class HFTree extends BaseComponent('HFTree') {
   }
 
   renderTreeNodes = (data, disabled) => {
-    return _.map(data, (v) => {
+    return _.map(data, v => {
       if (v.childen) {
         return (
           <Tree.TreeNode title={v.title} key={v.key} disableCheckbox={disabled}>
@@ -42,12 +42,12 @@ class HFTree extends BaseComponent('HFTree') {
           </Tree.TreeNode>
         );
       }
-      return <Tree.TreeNode title={v.title} key={v.key} disableCheckbox={disabled}/>;
+      return <Tree.TreeNode title={v.title} key={v.key} disableCheckbox={disabled} />;
     });
   }
 
   render() {
-    const { dataSource=[], disabled=false } = this.props;
+    const { dataSource = [], disabled = false } = this.props;
     return (
       <Tree checkable
         disabled={disabled}
@@ -55,7 +55,8 @@ class HFTree extends BaseComponent('HFTree') {
         onCheck={this.onCheck}
         expandedKeys={this.state.expandedKeys}
         autoExpandParent={this.state.autoExpandParent}
-        checkedKeys={this.state.checkedKeys}>
+        checkedKeys={this.state.checkedKeys}
+      >
         {
           this.renderTreeNodes(dataSource, false)
         }
