@@ -15,61 +15,39 @@ class FetchPack {
 
   async post(url, body) {
     let respData = {};
+
     try {
-      let resp = await fetch(url, { ...this.requestInit,
-        method: 'post',
-        body: JSON.stringify(body)
-      });
+      let resp = await fetch(url, { ...this.requestInit, method: 'post', body: JSON.stringify(body) });
       respData = await resp.json();
 
-      if (respData.status === 500) {
-        respData.succ = false;
-        respData.msg = respData.message || '';
-      }
-
-      if (respData.status === 200) {
-        respData.succ = true;
-        respData.msg = respData.message || '';
+      // 判断是否有重定向
+      if (respData.code === 302) {
+        window.location.href = respData.data[0];
       }
     } catch (err) {
-      console.log('fetch get post', err);
+      console.log(err);
       respData.succ = false;
-      respData.msg = `网络异常:${err}`;
+      respData.msg = `网络请求异常`;
     }
 
-    // 判断是否有重定向
-    if (respData.code === 302) {
-      window.location.href = respData.data[0];
-    }
     return respData;
   }
 
   async get(url) {
     let respData = {};
+
     try {
-      let resp = await fetch(url, { ...this.requestInit,
-        method: 'get'
-      });
+      let resp = await fetch(url, { ...this.requestInit, method: 'get' });
       respData = await resp.json();
 
-      if (respData.status === 500) {
-        respData.succ = false;
-        respData.msg = respData.message || '';
-      }
-
-      if (respData.status === 200) {
-        respData.succ = true;
-        respData.msg = respData.message || '';
+      // 判断是否有重定向
+      if (respData.code === 302) {
+        window.location.href = respData.data[0];
       }
     } catch (err) {
-      console.log('fetch get err', err);
+      console.log(err);
       respData.succ = false;
-      respData.msg = `网络异常:${err}`;
-    }
-
-    // 判断是否有重定向
-    if (respData.code === 302) {
-      window.location.href = respData.data[0];
+      respData.msg = `网络请求异常`;
     }
 
     return respData;
