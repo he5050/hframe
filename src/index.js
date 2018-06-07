@@ -18,42 +18,49 @@ import proxy from './net/proxy';
 import ossTool from './oss/oss_tool';
 import OSSClient from './oss/oss_client';
 
-import JMCascader from './components/cascader';
-import JMImage, { EmImgProcessType, computeUrl } from './components/image';
-import JMSelect from './components/select';
-import JMTable, { JMFilter, TabColumnType, FilterItemType } from './components/table';
-import JMTree from './components/tree';
-import JMUpload from "./components/upload";
+import HFCascader from './components/cascader';
+import HFImage, {
+  EmImgProcessType,
+  computeUrl
+} from './components/image';
+import HFSelect from './components/select';
+import HFTable, {
+  HFFilter,
+  TabColumnType,
+  FilterItemType
+} from './components/table';
+import HFTree from './components/tree';
+import HFUpload from "./components/upload";
 import NOPower from "./components/error";
 
 export {
-	LoaderApp,
-	factoryApp,
-	renderApp,
+  LoaderApp,
+  factoryApp,
+  renderApp,
 
-	BaseComponent,
-	AppLoader,
-	appFactory,
-	toRender,
-	fetchPack,
-	proxy,
-	cryptoTool,
-	calendar,
-	ossTool,
-	utils,
-	validation,
-	cachePool,
-	OSSClient,
-	JMImage,
-	EmImgProcessType,
-	computeUrl,
-	JMCascader,
-	JMSelect,
-	JMTable,
-	JMFilter, 
-	TabColumnType, 
-	FilterItemType,
-	JMTree,
-	JMUpload,
-	NOPower,
+  BaseComponent,
+  AppLoader,
+  appFactory,
+  toRender,
+  fetchPack,
+  proxy,
+  cryptoTool,
+  calendar,
+  ossTool,
+  utils,
+  validation,
+  cachePool,
+  OSSClient,
+  HFImage,
+  EmImgProcessType,
+  computeUrl,
+  HFCascader,
+  HFSelect,
+  HFTable,
+  HFFilter,
+  TabColumnType,
+  FilterItemType,
+  HFTree,
+  HFUpload,
+  NOPower,
 };
