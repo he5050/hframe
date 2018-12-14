@@ -16,7 +16,17 @@ export const FilterItemType = {
   Date: 5, // 日期
   DropDownNet: 6, // 下拉,选项网络加载
   Cascader: 7, // 级连选择框
-  Radio: 8 // 单选按钮组
+  Radio: 8, // 单选按钮组
+};
+
+// 屏幕宽度
+const ScreenWidth = {
+  XXL: 1600,
+  XL: 1200,
+  LG: 992,
+  MD: 768,
+  SM: 576,
+  XS: 0,
 };
 
 @Form.create()
@@ -25,8 +35,41 @@ export default class FilterArea extends PureComponent {
     super(props);
     this.state = {
       // 读取展开状态初始值
-      unfold: "unfold" in props ? props.unfold : this.getDefaultUnfold(props)
+      unfold: "unfold" in props ? props.unfold : this.getDefaultUnfold(props),
+      // 当前屏幕宽度 尺寸
+      screenWidth: undefined
     };
+  }
+
+  componentDidMount() {
+    this.updateScreenWidth();
+    window.addEventListener('resize', this.updateScreenWidth);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateScreenWidth);
+  }
+
+  // 更新当前屏幕宽度
+  updateScreenWidth = () => {
+    let viewWidth = window.innerWidth;
+    let screenWidth;
+    if (viewWidth >= ScreenWidth.XXL) {
+      screenWidth = ScreenWidth.XXL;
+    } else if (viewWidth >= ScreenWidth.XL) {
+      screenWidth = ScreenWidth.XL;
+    } else if (viewWidth >= ScreenWidth.LG) {
+      screenWidth = ScreenWidth.LG;
+    } else if (viewWidth >= ScreenWidth.MD) {
+      screenWidth = ScreenWidth.MD;
+    } else if (viewWidth >= ScreenWidth.SM) {
+      screenWidth = ScreenWidth.SM;
+    } else {
+      screenWidth = ScreenWidth.XS;
+    }
+    if (screenWidth !== this.state.screenWidth) {
+      this.setState({ screenWidth: screenWidth });
+    }
   }
 
   // 获取unfold的默认值，
@@ -57,7 +100,7 @@ export default class FilterArea extends PureComponent {
             {
               getFieldDecorator(node.fieldKey, {
                 initialValue: initValue,
-                ...(fieldOptions || {})
+                ...(fieldOptions || {}),
               })(
                 <Input {...other} />
               )
@@ -73,7 +116,7 @@ export default class FilterArea extends PureComponent {
             {
               getFieldDecorator(node.fieldKey, {
                 initialValue: initValue,
-                ...(fieldOptions || {})
+                ...(fieldOptions || {}),
               })(
                <DatePicker.RangePicker {...extraOptions} {...other} />
               )
@@ -94,7 +137,7 @@ export default class FilterArea extends PureComponent {
             {
               getFieldDecorator(node.fieldKey, {
                 initialValue: initValue,
-                ...(fieldOptions || {})
+                ...(fieldOptions || {}),
               })(
                 <DatePicker {...other} {...extraOptions} />
               )
@@ -115,7 +158,7 @@ export default class FilterArea extends PureComponent {
             {
               getFieldDecorator(node.fieldKey, {
                 initialValue: initValue,
-                ...(fieldOptions || {})
+                ...(fieldOptions || {}),
               })(
                 <Select {...other}>
                   {
@@ -140,7 +183,7 @@ export default class FilterArea extends PureComponent {
             {
               getFieldDecorator(node.fieldKey, {
                 initialValue: initValue,
-                ...(fieldOptions || {})
+                ...(fieldOptions || {}),
               })(
                 <HFSelect {...other} />
               )
@@ -155,7 +198,7 @@ export default class FilterArea extends PureComponent {
             {
               getFieldDecorator(node.fieldKey, {
                 initialValue: initValue,
-                ...(fieldOptions || {})
+                ...(fieldOptions || {}),
               })(
                 <HFCascader {...other} />
               )
@@ -170,7 +213,7 @@ export default class FilterArea extends PureComponent {
             {
               getFieldDecorator(node.fieldKey, {
                 initialValue: initValue,
-                ...(fieldOptions || {})
+                ...(fieldOptions || {}),
               })(
                 <Radio.Group {...other}>
                   {
@@ -215,11 +258,30 @@ export default class FilterArea extends PureComponent {
     this.setState({ unfold });
   };
 
+  // 根据当前浏览器宽度 读取对应的span值
+  readSpan(col) {
+    switch (this.state.screenWidth) {
+      case ScreenWidth.XXL:
+        return col.xxl || col.xl || col.lg || col.md || col.sm || col.span;
+      case ScreenWidth.XL:
+        return col.xl || col.lg || col.md || col.sm || col.span;
+      case ScreenWidth.LG:
+        return col.lg || col.md || col.sm || col.span;
+      case ScreenWidth.MD:
+        return col.md || col.sm || col.span;
+      case ScreenWidth.SM:
+        return col.sm || col.span;
+      default:
+        return col.xs || col.span;
+    }
+  }
+
   dealWith() {
     /**
      * v的数据结构
      * type: FilterItemType的类型
-     * weight: 1,2,3 占位权重，1表示个最小的输入条件占位
+     * weight: 1,2,3 占位权重，1表示个最小的输入条件占位 兼容老版本
+     * col: antd网格组件 Col组件属性
      * value: ''
      * keyName: ''
      * attribute: {
@@ -228,90 +290,67 @@ export default class FilterArea extends PureComponent {
      *  render:()=>{}
      * }
      */
-    const { configs = [] } = this.props;
-
-    // 先进行分行
-    let rows = [];
-    let row = [];
-    let weight = 0;
+    const { configs = [], gutter = { span: 8, md: 12, lg: 18, xl: 24, xxl: 32 } } = this.props;
+    let btnCol = { span: 24, md: 12, lg: 8, xl: 6, xxl: 4 };
+    // 多行标记 如果筛选条件没有第二行 则值为-1, 反之表示 multiRow 表示第二行第一个元素的下标
+    let multiRowIndex = -1;
+    // 计算 multiRowIndex 的值
+    let spanSum = 0;
     for (let i = 0; i < configs.length; i++) {
       const v = configs[i];
-      // 权重值超过3就需要分行了
-      if (weight + v.weight <= 3) {
-        weight += v.weight;
-        row.push(v);
+      if (v.weight) {
+        spanSum += Number(v.weight * 8);
       } else {
-        rows.push([...row]);
-        row = [];
-        row.push(v);
-        weight = v.weight;
+        spanSum += this.readSpan(v.col);
+      }
+      if (spanSum > 24) {
+        multiRowIndex = i;
+        break;
       }
     }
-    if (row.length > 0) {
-      rows.push([...row]);
-    }
 
-    // 生成搜索区域内容
-    if (rows.length === 1 && weight < 3) {
-      let spanSum = 0;
-      return (
-        <Row gutter={48} className="one-row">
-          {
-            _.map(rows[0], (vv, kk) => {
-              spanSum += vv.weight * 8;
-              return (
-                <Col key={kk} span={vv.weight * 8}>
-                  {this.generator(vv)}
-                </Col>
-              );
-            })
-          }
-          <Col key="filter-button" span={24 - spanSum}>
-            <div key="filter-button" className="filter-button">
-              <span className="button-group">
-                <Button type="primary" onClick={this.onFilter}>查询</Button>
-                <Button onClick={this.onReset}>重置</Button>
-              </span>
-            </div>
-          </Col>
-        </Row>
-      );
+    // 是否是按钮
+    let singleRowBtn = false;
+    if (multiRowIndex === -1) {
+      spanSum += this.readSpan(btnCol);
+      if (spanSum <= 24) {
+        singleRowBtn = true;
+      }
     }
-
-    let style = this.state.unfold ? undefined : { display: "none" };
-    let content = _.map(rows, (v, k) => {
-      return (
-        <Row key={k} style={k >= 1 ? style : undefined} gutter={48}>
-          {
-            _.map(v, (vv, kk) => {
-              return (
-                <Col key={kk} span={vv.weight * 8}>
-                  {this.generator(vv)}
-                </Col>
-              );
-            })
-          }
-        </Row>
-      );
-    });
-    content.push(
-      <div key="filter-button" className="filter-button align-right">
-        <span className="button-group">
-          <Button type="primary" onClick={this.onFilter}>查询</Button>
-          <Button onClick={this.onReset}>重置</Button>
-          {
-            rows.length > 1 && (
-              <a onClick={this.onSwitchUnfold}>
-                {this.state.unfold ? "折叠" : "展开"}
-                <Icon type={this.state.unfold ? "up" : "down"} />
-              </a>
-            )
-          }
-        </span>
-      </div>
+    return (
+      <Row type="flex" gutter={gutter} className="one-row">
+        {
+          _.map(configs, (v, k) => {
+            let style = this.state.unfold ? undefined : { display: "none" };
+            let col = v.weight ? { span: v.weight * 8 } : v.col;
+            return (
+              <Col
+                key={k}
+                style={(multiRowIndex !== -1 && k >= multiRowIndex) ? style : undefined}
+                {...col}
+              >
+                {this.generator(v)}
+              </Col>
+            );
+          })
+        }
+        <Col className={`filter-col ${singleRowBtn ? 'single-row' : 'multi-row'}`} {...btnCol}>
+          <div className="filter-button">
+            <span className="button-group">
+              <Button type="primary" onClick={this.onFilter}>查询</Button>
+              <Button onClick={this.onReset}>重置</Button>
+              {
+                multiRowIndex !== -1 &&
+                <a onClick={this.onSwitchUnfold}>
+                  {this.state.unfold ? "折叠" : "展开"}
+                  <Icon type={this.state.unfold ? "up" : "down"} />
+                </a>
+              }
+            </span>
+          </div>
+        </Col>
+      </Row>
     );
-
-    return content;
   }
 
   render() {
@@ -328,5 +367,5 @@ export default class FilterArea extends PureComponent {
 
 FilterArea.defaultProps = {
   // 设置label默认最低宽度 labelLength区域为2-6
-  labelLength: 4
+  labelLength: 4,
 };

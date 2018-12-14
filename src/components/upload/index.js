@@ -1,20 +1,20 @@
-import React from 'react';
+import React from "react";
 import PropTypes from "prop-types";
 import { fromJS, is } from "immutable";
 import update from "react-addons-update";
 import _ from "lodash";
 import { Upload, Icon, Button, Modal, message } from "antd";
-import BaseComponent from '../../middleware/base_component';
+import BaseComponent from "../../middleware/base_component";
 import HFImage, { EmImgProcessType, computeUrl } from "../image";
 import OSSClient from "../../oss/oss_client";
 
-class HFUpload extends BaseComponent('HFUpload') {
+class HFUpload extends BaseComponent("HFUpload") {
   constructor(props, context) {
     super(props, context);
-    const { renderType, mode, keyId, baseDir = 'test', custom } = this.props;
+    const { renderType, mode, keyId, baseDir = "test", custom } = this.props;
     this.oss = new OSSClient(baseDir, renderType, mode, keyId, custom);
     this.state = {
-      previewImage: '',
+      previewImage: "",
       previewVisible: false,
       files: this.dealWith(props.value)
     };
@@ -26,13 +26,13 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
 
     let fs = [];
-    if (Object.prototype.toString.call(value) === '[object Array]') {
+    if (Object.prototype.toString.call(value) === "[object Array]") {
       // 数组，表示多个值
       fs = _.map(value, (v, k) => {
         return {
           uid: -1 * k,
           name: v,
-          status: 'done',
+          status: "done",
           url: v,
           thumbUrl: this.getThumbUrl(v)
         };
@@ -41,11 +41,10 @@ class HFUpload extends BaseComponent('HFUpload') {
       fs = [{
         uid: -1,
         name: value,
-        status: 'done',
+        status: "done",
         url: value,
         thumbUrl: this.getThumbUrl(value)
       }];
-      console.log(fs);
     }
     return fs;
   }
@@ -58,15 +57,15 @@ class HFUpload extends BaseComponent('HFUpload') {
 
   // 配置缩略图地址
   getThumbUrl(url) {
-    const { listType = 'text' } = this.props;
-    if (listType === 'text') {
+    const { listType = "text" } = this.props;
+    if (listType === "text") {
       return null;
     }
 
     let thumbUrl = computeUrl({
       imageUrl: url,
       width: 100,
-      aspectRatio: '1:1',
+      aspectRatio: "1:1",
       quality: 90,
       processType: EmImgProcessType.emGD_L_S,
       water: false
@@ -89,11 +88,11 @@ class HFUpload extends BaseComponent('HFUpload') {
         uid: info.file.uid,
         name: info.file.name,
         status: info.file.status,
-        url: info.file.response
+        url: info.file.response,
       });
     }
 
-    if (info.file.status === 'done') {
+    if (info.file.status === "done") {
       this.setState({ files: files }, () => {
         this.triggerChange();
       });
@@ -102,14 +101,14 @@ class HFUpload extends BaseComponent('HFUpload') {
     }
   }
 
-  onRemove = file => {
+  onRemove = (file) => {
     if (file.url) {
       this.oss.deleteFile(file.url);
     }
 
     // 从列表中删除
     this.setState(
-      { files: _.remove([...this.state.files], o => { return file.uid !== o.uid; }) },
+      { files: _.remove([...this.state.files], (o) => { return file.uid !== o.uid; }) },
       () => { this.triggerChange(); }
     );
   }
@@ -119,12 +118,12 @@ class HFUpload extends BaseComponent('HFUpload') {
     if (onChange) {
       let fs = [];
       for (let v of this.state.files) {
-        if (v.status === 'done') {
+        if (v.status === "done") {
           fs.push(v.url);
         }
       }
 
-      if (Object.prototype.toString.call(value) === '[object Array]') {
+      if (Object.prototype.toString.call(value) === "[object Array]") {
         onChange(fs);
       } else {
         onChange(fs[0]);
@@ -134,33 +133,33 @@ class HFUpload extends BaseComponent('HFUpload') {
 
   onProgress = (e, file) => {
     let files = update(this.state.files, {
-      $apply: o => {
-        let item = _.find(o, ['uid', file.uid]);
+      $apply: (o) => {
+        let item = _.find(o, ["uid", file.uid]);
         if (item) {
           item.percent = e.percent;
         }
         return o;
-      }
+      },
     });
     this.setState({ files });
   }
 
-  handUpload = fs => {
+  handUpload = (fs) => {
     const { uploadDir, suffix } = this.props;
-    this.oss.uploadFile(fs.file, uploadDir, suffix, percentage => {
-      return done => {
+    this.oss.uploadFile(fs.file, uploadDir, suffix, (percentage) => {
+      return (done) => {
         fs.onProgress({ percent: Math.floor(percentage * 100) }, fs.file);
         done();
       };
-    }).then(fp => {
+    }).then((fp) => {
       fs.onSuccess(fp, fs.file);
-    }).catch(err => {
-      console.log('err:', err);
+    }).catch((err) => {
+      console.log("err:", err);
       fs.onError(err, {}, fs.file);
     });
   }
 
-  beforeUpload = file => {
+  beforeUpload = (file) => {
     const { limit = 99999 } = this.props;
     if (this.state.files.length >= limit) {
       message.error(`上传文件数量超过限制!${limit}`);
@@ -181,17 +180,17 @@ class HFUpload extends BaseComponent('HFUpload') {
   handleCancel = () => this.setState({ previewVisible: false });
 
   // 点击预览
-  handlePreview = file => {
+  handlePreview = (file) => {
     if (file.url) {
       this.setState({
         previewImage: file.url,
-        previewVisible: true
+        previewVisible: true,
       });
     }
   }
 
   render() {
-    const { accept, multiple = false, limit = 99999, listType = 'text', disabled = false, uploadRender } = this.props;
+    const { accept, multiple = false, limit = 99999, listType = "text", disabled = false, uploadRender } = this.props;
     let ps = {
       accept: accept,
       multiple: multiple,
@@ -205,15 +204,15 @@ class HFUpload extends BaseComponent('HFUpload') {
       onRemove: this.onRemove,
       onPreview: this.handlePreview,
       onChange: this.onChange,
-      fileList: this.state.files
+      fileList: this.state.files,
     };
-    const defaultRender = fileList => {
+    const defaultRender = (fileList) => {
       if (fileList.length >= limit || disabled) {
         return null;
       }
 
       switch (listType) {
-        case 'picture-card': {
+        case "picture-card": {
           return (
             <div>
               <Icon type="plus" />
@@ -221,8 +220,8 @@ class HFUpload extends BaseComponent('HFUpload') {
             </div>
           );
         }
-        case 'picture':
-        case 'text':
+        case "picture":
+        case "text":
         default: {
           return (
             <Button>
@@ -275,10 +274,10 @@ HFUpload.propTypes = {
   // 是否展示 uploadList, 可设为一个对象，用于单独设定 showPreviewIcon 和 showRemoveIcon
   showUploadList: PropTypes.oneOfType([
     PropTypes.bool,
-    PropTypes.object
+    PropTypes.object,
   ]),
   // 自定义结构
-  uploadRender: PropTypes.func
+  uploadRender: PropTypes.func,
 };
 
 /**
@@ -290,7 +289,7 @@ HFUpload.propTypes = {
       suffix="jpg"
       accept="image/jpeg,image/jpg,image/png"
       multiple={false}
-      value={['http://123.jpg']}
+      value={["http://123.jpg"]}
       limit={2}
       fileSize={1024*200} />
  *

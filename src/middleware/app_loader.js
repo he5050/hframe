@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import BaseComponent from './base_component';
 import * as actions from './com_action';
 
-class AppLoader extends BaseComponent('基础') {
+class AppLoader extends BaseComponent('系统') {
 	constructor(props, context) {
 		super(props, context);
 	}
@@ -44,7 +44,7 @@ class AppLoader extends BaseComponent('基础') {
 		if (!ReduxConnector) {
 			return null;
 		}
-
+		
 		return (
 			<ReduxConnector store={this.context.store} payload={payload} key={name} {...others} />
 		);
@@ -52,20 +52,20 @@ class AppLoader extends BaseComponent('基础') {
 }
 
 AppLoader.contextTypes = {
-	store: PropTypes.object
+	store: PropTypes.object,
 };
 
 export default connect(
 	(state, props) => {
 		const payload = state[props.name];
 		return {
-			payload: payload || {}
+			payload: payload || {},
 		};
 	},
 	dispatch => ({ ...bindActionCreators({ ...actions }, dispatch) }),
-	null,
+	null, 
 	{
 		withRef: true,
-		pure: true
+		pure: true,
 	}
 )(AppLoader);

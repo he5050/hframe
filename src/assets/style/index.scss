@@ -2,3 +2,12 @@
 @import './select';
 @import './table';
 @import './error';
+
+// antd框架样式调整
+.ant-form {
+  &:not(.ant-form-inline) {
+    .ant-form-item {
+      margin-bottom: 12px;
+    }
+  }
+}

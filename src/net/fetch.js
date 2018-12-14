@@ -7,9 +7,10 @@ class FetchPack {
 
     this.requestInit = {
       headers,
-      credentials: 'same-origin', // include:表示可以跨域传递cookie same-origin:表示只能同源传递cookie
+      // include:表示可以跨域传递cookie same-origin:表示只能同源传递cookie
+      credentials: 'same-origin',
       mode: 'cors',
-      cache: 'default'
+      cache: 'default',
     };
   }
 
@@ -17,7 +18,14 @@ class FetchPack {
     let respData = {};
 
     try {
-      let resp = await fetch(url, { ...this.requestInit, method: 'post', body: JSON.stringify(body) });
+      let resp = await fetch(
+        url,
+        {
+          ...this.requestInit,
+          method: 'post',
+          body: JSON.stringify(body),
+        }
+      );
       respData = await resp.json();
 
       // 判断是否有重定向
@@ -37,7 +45,13 @@ class FetchPack {
     let respData = {};
 
     try {
-      let resp = await fetch(url, { ...this.requestInit, method: 'get' });
+      let resp = await fetch(
+        url,
+        {
+          ...this.requestInit,
+          method: 'get',
+        }
+      );
       respData = await resp.json();
 
       // 判断是否有重定向

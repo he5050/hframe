@@ -133,18 +133,14 @@ $error-color: #f5222d;
 // 表格筛选样式
 .u-table-filter {
   $item-space: 16px;
-  >.ant-row {
-    margin-bottom: $item-space;
-    &:nth-child(1) {
-      margin-top: $item-space;
-      &.one-row {
-        margin-top: 0;
-      }
-    }
+
+  &.ant-form-inline .ant-form-explain {
+    position: static;
   }
+  
   .ant-form-item {
     display: flex;
-    margin-bottom: 0;
+    margin-bottom: 12px;
     margin-right: 0;
     >.ant-form-item-label {
       width: auto;
@@ -163,6 +159,15 @@ $error-color: #f5222d;
       line-height: 32px;
     }
   }
+
+  .filter-col {
+    &.multi-row {
+      flex: 1;
+      text-align: right;
+      min-width: 100%;
+    }
+  }
+
   .filter-button {
     line-height: 32px; // margin-bottom: $item-space;
     @include clearfix();
@@ -178,11 +183,6 @@ $error-color: #f5222d;
         &+a {
           margin-left: 8px;
         }
-      }
-    }
-    &.align-right {
-      .button-group {
-        float: right;
       }
     }
   }

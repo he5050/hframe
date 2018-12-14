@@ -16,10 +16,10 @@ class HFSelect extends BaseComponent('HFSelect') {
       data: [],
       queryParams: {
         pageIndex: 1,
-        pageSize: props.pageSize || 20
+        pageSize: props.pageSize || 20,
       },
       count: 0,
-      fetching: false
+      fetching: false,
     };
     this.handleSearch = debounce(this.onSearch, 800);
   }
@@ -32,7 +32,7 @@ class HFSelect extends BaseComponent('HFSelect') {
     if (arrs[1] && arrs[1].length > 0) {
       let ps = arrs[1].split("&");
       // 解析参数
-      _.each(ps, v => {
+      _.each(ps, (v) => {
         let pa = v.split("=");
         if (pa.length === 2) {
           params[pa[0]] = pa[1];
@@ -44,8 +44,8 @@ class HFSelect extends BaseComponent('HFSelect') {
     return {
       url: arrs[0],
       queryParams: {
-        ...params
-      }
+        ...params,
+      },
     };
   }
 
@@ -83,7 +83,7 @@ class HFSelect extends BaseComponent('HFSelect') {
           data: [...this.state.data, ...resp.data],
           queryParams: { ...p },
           count: resp.count,
-          fetching: false
+          fetching: false,
         });
       }
     } else {
@@ -91,14 +91,14 @@ class HFSelect extends BaseComponent('HFSelect') {
       if (!resp.succ) {
         this.setState({
           fetching: false,
-          data: []
+          data: [],
         });
       } else {
         this.setState({
           data: [...resp.data],
           queryParams: { ...p },
           count: resp.count,
-          fetching: false
+          fetching: false,
         });
       }
     }
@@ -109,7 +109,7 @@ class HFSelect extends BaseComponent('HFSelect') {
     this.setState({ data: [] });
     this.fetchData({
         ...this.state.queryParams,
-        pageIndex: 1
+        pageIndex: 1,
       },
       false,
       this.props
@@ -117,12 +117,13 @@ class HFSelect extends BaseComponent('HFSelect') {
   }
 
   componentWillReceiveProps(nextProps) {
-    // 属性发生改变
-    if (this.props.dataUrl !== nextProps.dataUrl) {
+    // 数据url发生变化，或者由不可修改变成可修改的时候
+    if ((this.props.dataUrl !== nextProps.dataUrl)
+      || (this.props.disabled !== nextProps.disabled && !nextProps.disabled)) {
       this.setState({ data: [] });
       this.fetchData({
           ...this.state.queryParams,
-          pageIndex: 1
+          pageIndex: 1,
         },
         false,
         nextProps
@@ -130,7 +131,7 @@ class HFSelect extends BaseComponent('HFSelect') {
     }
   }
 
-  onSearch = value => {
+  onSearch = (value) => {
     const { searchKey = 'name' } = this.props;
     let p = { ...this.state.queryParams };
     if (p[searchKey] !== value) {
@@ -149,7 +150,7 @@ class HFSelect extends BaseComponent('HFSelect') {
     this.fetchData(p, true);
   }
 
-  handleChange = v => {
+  handleChange = (v) => {
     this.props.onChange(v);
   }
 
@@ -200,7 +201,7 @@ HFSelect.propTypes = {
   mode: PropTypes.string,
   dataUrl: PropTypes.string.isRequired,
   onChange: PropTypes.func,
-  optionValue: PropTypes.func.isRequired
+  optionValue: PropTypes.func.isRequired,
 };
 
 export default HFSelect;

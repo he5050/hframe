@@ -1,5 +1,5 @@
-import moment from 'moment';
-import _ from 'lodash';
+import moment from "moment";
+import _ from "lodash";
 
 const utils = {
   // 例如url为: /sample
@@ -22,15 +22,15 @@ const utils = {
     // url
     let paramsUrl = arrs[0];
     if (_.size(params) > 0 && paramsUrl) {
-      paramsUrl += '?';
+      paramsUrl += "?";
       let first = true;
       _.each(params, (v, k) => {
         if (v) {
           if (first) {
-            paramsUrl += k + '=' + v;
+            paramsUrl += `${k}=${v}`;
             first = false;
           } else {
-            paramsUrl += '&' + k + '=' + v;
+            paramsUrl += `&${k}=${v}`;
           }
         }
       });
@@ -43,28 +43,28 @@ const utils = {
    * @param {*} n
    */
   digitUppercase(n) {
-    const fraction = ['角', '分'];
-    const digit = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
+    const fraction = ["角", "分"];
+    const digit = ["零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"];
     const unit = [
-      ['元', '万', '亿'],
-      ['', '拾', '佰', '仟']
+      ["元", "万", "亿"],
+      ["", "拾", "佰", "仟"]
     ];
     let num = Math.abs(n);
-    let s = '';
+    let s = "";
     fraction.forEach((item, index) => {
-      s += (digit[Math.floor(num * 10 * (10 ** index)) % 10] + item).replace(/零./, '');
+      s += (digit[Math.floor(num * 10 * (10 ** index)) % 10] + item).replace(/零./, "");
     });
-    s = s || '整';
+    s = s || "整";
     num = Math.floor(num);
     for (let i = 0; i < unit[0].length && num > 0; i += 1) {
-      let p = '';
+      let p = "";
       for (let j = 0; j < unit[1].length && num > 0; j += 1) {
         p = digit[num % 10] + unit[1][j] + p;
         num = Math.floor(num / 10);
       }
-      s = p.replace(/(零.)*零$/, '').replace(/^$/, '零') + unit[0][i] + s;
+      s = p.replace(/(零.)*零$/, "").replace(/^$/, "零") + unit[0][i] + s;
     }
-    return s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');
+    return s.replace(/(零.)*零元/, "元").replace(/(零.)+/g, "零").replace(/^整$/, "零元整");
   },
 
   /**
@@ -83,14 +83,14 @@ const utils = {
     const now = new Date();
     const oneDay = 1000 * 60 * 60 * 24;
 
-    if (type === 'today') {
+    if (type === "today") {
       now.setHours(0);
       now.setMinutes(0);
       now.setSeconds(0);
       return [moment(now), moment(now.getTime() + (oneDay - 1000))];
     }
 
-    if (type === 'week') {
+    if (type === "week") {
       let day = now.getDay();
       now.setHours(0);
       now.setMinutes(0);
@@ -104,19 +104,64 @@ const utils = {
       return [moment(beginTime), moment(beginTime + ((7 * oneDay) - 1000))];
     }
 
-    if (type === 'month') {
+    if (type === "month") {
       const year = now.getFullYear();
       const month = now.getMonth();
-      const nextDate = moment(now).add(1, 'months');
+      const nextDate = moment(now).add(1, "months");
       const nextYear = nextDate.year();
       const nextMonth = nextDate.month();
       return [moment(`${year}-${fixedZero(month + 1)}-01 00:00:00`), moment(moment(`${nextYear}-${fixedZero(nextMonth + 1)}-01 00:00:00`).valueOf() - 1000)];
     }
 
-    if (type === 'year') {
+    if (type === "year") {
       const year = now.getFullYear();
       return [moment(`${year}-01-01 00:00:00`), moment(`${year}-12-31 23:59:59`)];
     }
+  },
+
+  /**
+   *
+   * @desc 获取浏览器类型和版本
+   * @return {String}
+   */
+  getExplore() {
+    let sys = {};
+    let ua = navigator.userAgent.toLowerCase();
+    let s;
+    (s = ua.match(/rv:([\d.]+)\) like gecko/)) ? sys.ie = s[1] :
+        (s = ua.match(/msie ([\d\.]+)/)) ? sys.ie = s[1] :
+        (s = ua.match(/edge\/([\d\.]+)/)) ? sys.edge = s[1] :
+        (s = ua.match(/firefox\/([\d\.]+)/)) ? sys.firefox = s[1] :
+        (s = ua.match(/(?:opera|opr).([\d\.]+)/)) ? sys.opera = s[1] :
+        (s = ua.match(/chrome\/([\d\.]+)/)) ? sys.chrome = s[1] :
+        (s = ua.match(/version\/([\d\.]+).*safari/)) ? sys.safari = s[1] : 0;
+
+        // 根据关系进行判断
+    if (sys.ie) return ("IE: " + sys.ie);
+    if (sys.edge) return ("EDGE: " + sys.edge);
+    if (sys.firefox) return ("Firefox: " + sys.firefox);
+    if (sys.chrome) return ("Chrome: " + sys.chrome);
+    if (sys.opera) return ("Opera: " + sys.opera);
+    if (sys.safari) return ("Safari: " + sys.safari);
+
+    return "Unkonwn";
+  },
+
+  /**
+   *
+   * @desc 获取操作系统类型
+   * @return {String}
+   */
+  getOS() {
+    let userAgent = "navigator" in window && "userAgent" in navigator && navigator.userAgent.toLowerCase() || "";
+    let appVersion = "navigator" in window && "appVersion" in navigator && navigator.appVersion.toLowerCase() || "";
+
+    if (/mac/i.test(appVersion)) return "MacOSX";
+    if (/win/i.test(appVersion)) return "windows";
+    if (/linux/i.test(appVersion)) return "linux";
+    if (/iphone/i.test(userAgent) || /ipad/i.test(userAgent) || /ipod/i.test(userAgent)) "ios";
+    if (/android/i.test(userAgent)) return "android";
+    if (/win/i.test(appVersion) && /phone/i.test(userAgent)) return "windowsPhone";
   }
 };
 

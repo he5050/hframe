@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import _ from "lodash";
 import { fromJS, is } from "immutable";
-import { Cascader } from 'antd';
-import utils from '../../utils/utils';
-import fetchPack from '../../net/fetch';
-import BaseComponent from '../../middleware/base_component';
+import { Cascader } from "antd";
+import utils from "../../utils/utils";
+import fetchPack from "../../net/fetch";
+import BaseComponent from "../../middleware/base_component";
 
-export default class HFCascader extends BaseComponent('HFCascader') {
+export default class HFCascader extends BaseComponent("HFCascader") {
   constructor(props, context) {
     super(props, context);
     this.option = {
@@ -64,36 +64,43 @@ export default class HFCascader extends BaseComponent('HFCascader') {
 
     // 要把value里面的值初始到组件上面，必须把每一级的数据请求下来
     let cLen = configs.length;
+    // 记录父节点数组
+    let optionsChild;
+
     for (let k = 0; k < cLen; k++) {
       let v = configs[k];
       let isLeaf = !(cLen > k + 1);
       let resp = {};
+
       if (k && value[k - 1]) {
-        let f = _.findIndex(options, o => { return o.value === value[k - 1]; });
+        let f = _.findIndex(optionsChild, o => { return o.value === value[k - 1]; });
         if (f > -1) {
           // 找到了父项，判断父项里面有没有叶子节点
-          if (options[f].children && options[f].children.length > 0) {
+          if (optionsChild[f].children && optionsChild[f].children.length > 0) {
             continue;
           }
 
           // 请求子几点数据
           resp = await this.fetchData(v.dataUrl, { [configs[k].searchKey]: value[k - 1] });
-          options[f] = {
-            ...options[f],
+          optionsChild[f] = {
+            ...optionsChild[f],
             loading: false,
             children: _.map(resp.data, va => {
               return {
                 value: va.id,
                 label: va.name,
-                index: 1,
                 isLeaf
               };
             })
           };
+
+          // 记录父节点
+          optionsChild = optionsChild.children;
         }
       } else if (k === 0) {
         // 已经有值的情况下不做处理
         if (options.length > 0) {
+          optionsChild = options;
           continue;
         }
 
@@ -102,10 +109,10 @@ export default class HFCascader extends BaseComponent('HFCascader') {
           return {
             value: va.id,
             label: va.name,
-            index: 1,
             isLeaf
           };
         });
+        optionsChild = options;
       } else {
         break;
       }
@@ -122,13 +129,16 @@ export default class HFCascader extends BaseComponent('HFCascader') {
    */
   loadData = selectedOptions => {
     const { configs = [] } = this.props;
+    // 选中的层级
+    let idx = selectedOptions.length;
+    // 找到选中的层
     const targetOption = selectedOptions[selectedOptions.length - 1];
-    // 获取触发的index
-    let isLeaf = !(configs.length > targetOption.index + 1);
-    let index = targetOption.index + 1;
+    // 下一级数据是否是叶子节点
+    let isLeaf = idx >= (configs.length - 1);
+
     targetOption.loading = true;
     // 请求下一级的数据是根据搜索key加上具体的值
-    this.fetchData(configs[index - 1].dataUrl, { [configs[index - 1].searchKey]: targetOption.value })
+    this.fetchData(configs[idx].dataUrl, { [configs[idx].searchKey]: targetOption.value })
     .then(resp => {
       if (resp.succ) {
         targetOption.loading = false;
@@ -136,28 +146,39 @@ export default class HFCascader extends BaseComponent('HFCascader') {
           return {
             value: v.id,
             label: v.name,
-            index,
             isLeaf
           };
         });
+        this.forceUpdate();
       }
     });
   }
 
   render() {
-    const { disabled = false, value, allowClear = false, placeholder = '请选择', className, style } = this.props;
+    const {
+      value,
+      className,
+      style,
+      ...other
+    } = this.props;
+
     return (
       <Cascader
         className={className}
         style={style}
         value={value}
-        allowClear={allowClear}
-        disabled={disabled}
-        placeholder={placeholder}
         options={this.state.options}
         loadData={this.loadData}
         onChange={this.onChange}
-        changeOnSelect
+        {...
+          {
+            placeholder: "请选择",
+            disabled: false,
+            allowClear: false,
+            changeOnSelect: true,
+            ...other
+          }
+        }
       />
     );
   }

@@ -30,11 +30,11 @@ export default class Proxy {
 
       let bodyString = Buffer.from(JSON.stringify(body));
       let headers = {
-        'Content-Type': 'application/json',
-        'Content-Length': bodyString.length
+        "Content-Type": "application/json",
+        "Content-Length": bodyString.length
       };
       if (session) {
-        headers['Login-User'] = encodeURIComponent(JSON.stringify(session));
+        headers["Login-User"] = encodeURIComponent(JSON.stringify(session));
       }
 
       let options = {
@@ -42,23 +42,23 @@ export default class Proxy {
         method: "POST",
         headers: headers,
         host: this.host,
-        port: this.port,
+        port: this.port
       };
 
-      let req = http.request(options, (res) => {
-        res.setEncoding('utf8');
+      let req = http.request(options, res => {
+        res.setEncoding("utf8");
         let chunks = "";
-        res.on('data', (chunk) => {
+        res.on("data", chunk => {
           chunks += chunk;
         });
-        res.on('end', () => {
+        res.on("end", () => {
           if (res.statusCode !== 200) {
-            data.msg = '服务器应答异常';
+            data.msg = "服务器应答异常";
             data.code = res.statusCode;
             resolve(data);
           } else {
             if (chunks === "") {
-              data.msg = '服务器异常';
+              data.msg = "服务器异常";
               data.code = res.statusCode;
               resolve(data);
             } else {
@@ -66,14 +66,14 @@ export default class Proxy {
                 let json = JSON.parse(chunks);
                 resolve(json);
               } catch (e) {
-                data.msg = '数据请求异常';
+                data.msg = "数据请求异常";
                 data.code = res.statusCode;
                 resolve(data);
               }
             }
           }
         });
-        res.on('error', (e) => {
+        res.on("error", e => {
           data.msg = e.message;
           data.code = 404;
           resolve(data);
@@ -83,20 +83,20 @@ export default class Proxy {
       // 设置请求超时30秒
       req.setTimeout(30000);
 
-      req.on('error', (e) => {
-        if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
+      req.on("error", e => {
+        if (req.res && req.res.abort && (typeof req.res.abort === "function")) {
           req.res.abort();
         }
         req.abort();
-        data.msg = '服务器错误';
+        data.msg = "服务器错误";
         data.code = 404;
         resolve(data);
-      }).on('timeout', (e) => {
-        if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
+      }).on("timeout", e => {
+        if (req.res && req.res.abort && (typeof req.res.abort === "function")) {
           req.res.abort();
         }
         req.abort();
-        data.msg = 'request timeout';
+        data.msg = "request timeout";
         data.code = 404;
         resolve(data);
       });
@@ -123,10 +123,10 @@ export default class Proxy {
       }
 
       let headers = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json"
       };
       if (session) {
-        headers['Login-User'] = encodeURIComponent(JSON.stringify(session));
+        headers["Login-User"] = encodeURIComponent(JSON.stringify(session));
       }
 
       let options = {
@@ -134,30 +134,30 @@ export default class Proxy {
         method: "GET",
         headers: headers,
         host: this.host,
-        port: this.port,
+        port: this.port
       };
       let data = {
         succ: false,
         msg: "",
         data: [],
         code: 404,
-        count: 0,
+        count: 0
       };
 
-      let req = http.request(options, (res) => {
-        res.setEncoding('utf8');
+      let req = http.request(options, res => {
+        res.setEncoding("utf8");
         let chunks = "";
-        res.on('data', (chunk) => {
+        res.on("data", chunk => {
           chunks += chunk;
         });
-        res.on('end', () => {
+        res.on("end", () => {
           if (res.statusCode !== 200) {
-            data.msg = '服务器应答异常';
+            data.msg = "服务器应答异常";
             data.code = res.statusCode;
             resolve(data);
           } else {
             if (chunks === "") {
-              data.msg = '服务器异常';
+              data.msg = "服务器异常";
               data.code = res.statusCode;
               resolve(data);
             } else {
@@ -168,14 +168,14 @@ export default class Proxy {
                 }
                 resolve(json);
               } catch (e) {
-                data.msg = '数据请求异常';
+                data.msg = "数据请求异常";
                 data.code = res.statusCode;
                 resolve(data);
               }
             }
           }
         });
-        res.on('error', (e) => {
+        res.on("error", e => {
           data.msg = e.message;
           data.code = 404;
           resolve(data);
@@ -185,20 +185,20 @@ export default class Proxy {
       // 设置请求超时30秒
       req.setTimeout(30000);
 
-      req.on('error', (e) => {
-        if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
+      req.on("error", e => {
+        if (req.res && req.res.abort && (typeof req.res.abort === "function")) {
           req.res.abort();
         }
         req.abort();
-        data.msg = '服务器错误';
+        data.msg = "服务器错误";
         data.code = 404;
         resolve(data);
-      }).on('timeout', (e) => {
-        if (req.res && req.res.abort && (typeof req.res.abort === 'function')) {
+      }).on("timeout", e => {
+        if (req.res && req.res.abort && (typeof req.res.abort === "function")) {
           req.res.abort();
         }
         req.abort();
-        data.msg = 'request timeout';
+        data.msg = "request timeout";
         data.code = 404;
         resolve(data);
       });

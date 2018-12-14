@@ -13,7 +13,7 @@ class AppFactory {
   registerApps(apps) {
     this.apps = {
       ...this.apps,
-      ...apps
+      ...apps,
     };
   }
 

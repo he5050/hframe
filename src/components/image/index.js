@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
-import ossTool from '../../oss/oss_tool';
-import _ from "lodash";
+import ossTool from "../../oss/oss_tool";
 /*
  图片处理方式枚举
  * */
@@ -16,42 +15,42 @@ const EmImgProcessType = {
 };
 
 const computeUrl = props => {
-  let { imageUrl = '', width, height, quality, processType, aspectRatio, water, waterUrl } = props;
+  let { imageUrl = "", width, height, quality, processType, aspectRatio, water, waterUrl } = props;
 
   // 图片路径为空，不做处理
-  if (imageUrl === '') {
-    return '';
+  if (imageUrl === "") {
+    return "";
   }
 
   // 处理路径
   imageUrl = ossTool.dealWithURL(imageUrl);
 
   // 判断后缀，之处理jpg,gif的后缀
-  let fileExtend = imageUrl.substring(imageUrl.lastIndexOf('.')).toLowerCase();
-  if (fileExtend === '.jpg'
-    || fileExtend === '.jpeg'
-    || fileExtend === '.gif'
-    || fileExtend === '.png'
+  let fileExtend = imageUrl.substring(imageUrl.lastIndexOf(".")).toLowerCase();
+  if (fileExtend === ".jpg"
+    || fileExtend === ".jpeg"
+    || fileExtend === ".gif"
+    || fileExtend === ".png"
   ) {
     // 获取文件后缀名,图片服务只针对jpg类型才有效
     // 根据比例计算
-    let factors = aspectRatio.split(':');
-    if (factors[0] === '-1' || factors[1] === '-1') {
-      width = '100%';
-      height = '100%';
+    let factors = aspectRatio.split(":");
+    if (factors[0] === "-1" || factors[1] === "-1") {
+      width = "100%";
+      height = "100%";
     } else {
       if (width) {
         height = parseInt(width * (parseFloat(factors[1]) / parseFloat(factors[0])), 10);
       } else if (height) {
         width = parseInt(height * (parseFloat(factors[0]) / parseFloat(factors[1])), 10);
       } else {
-        console.log('高度或者宽度必须指定一个啊.');
-        return '';
+        console.log("高度或者宽度必须指定一个啊.");
+        return "";
       }
     }
 
     // 图片处理参数
-    let imageOption = '';
+    let imageOption = "";
     switch (processType) {
       case EmImgProcessType.emGD_H_W: {
         // 等比例缩放: 固定高度，宽度自适应
@@ -90,9 +89,9 @@ const computeUrl = props => {
     }
 
     // gif的不能加水印
-    if (water && imageOption !== '' && fileExtend !== '.gif') {
+    if (water && imageOption !== "" && fileExtend !== ".gif") {
       // 如果waterUrl没有传值，会得到一个默认的水印
-      imageOption += ossTool.getWatermarkWithPath(waterUrl || '');
+      imageOption += ossTool.getWatermarkWithPath(waterUrl || "");
     }
 
     return imageUrl + imageOption;
@@ -104,11 +103,11 @@ const computeUrl = props => {
 class HFImage extends PureComponent {
   render() {
     let factImageUrl = computeUrl(this.props);
-    if (factImageUrl === '') {
+    if (factImageUrl === "") {
       return null;
     }
 
-    const { linkUrl = '', className, style, onClick } = this.props;
+    const { linkUrl = "", className, style, onClick } = this.props;
     if (linkUrl.length > 0) {
       return (
         <div className={`img-box ${className || ""}`} style={style} onClick={onClick}>
@@ -128,14 +127,14 @@ class HFImage extends PureComponent {
 }
 
 HFImage.defaultProps = {
-  imageUrl: '',
-  linkUrl: '',
+  imageUrl: "",
+  linkUrl: "",
   width: 0,
   height: 0,
   quality: 90,
   processType: 0,
   water: false,
-  waterUrl: ''
+  waterUrl: ""
 };
 /*
  imageUrl      : 图片地址
@@ -161,7 +160,7 @@ HFImage.propTypes = {
 };
 
 // <HFImage
-//   imageUrl='http://img2.jsbn.com/venus/canmeramanHosterPro/20160321/1458535211448078720150929170217934776_1200x800.jpg'
+//   imageUrl='http://xxx/a.jpg'
 //   linkUrl='http://www.baidu.com'
 //   width={600}
 //   aspectRatio='3:2'

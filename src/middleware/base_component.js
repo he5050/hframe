@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component } from "react";
 import { fromJS, is } from "immutable";
 
 function trackLog(componentName) {
@@ -14,7 +14,7 @@ function trackLog(componentName) {
   };
 }
 
-export default (name = '未知') => class extends Component {
+export default (name = "未知") => class extends Component {
   @trackLog(name)
   shouldComponentUpdate(nextProps, nextState) {
     return !is(fromJS(this.props), fromJS(nextProps)) || !is(fromJS(this.state), fromJS(nextState));

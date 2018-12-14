@@ -1,7 +1,7 @@
 import update from "react-addons-update";
-import wrapMapStateToProps from './wrap_map_state_to_props';
-import wrapMapDispatchToProps from './wrap_map_dispatch_to_props';
-import createReduxConnector from './create_redux_connector';
+import wrapMapStateToProps from "./wrap_map_state_to_props";
+import wrapMapDispatchToProps from "./wrap_map_dispatch_to_props";
+import createReduxConnector from "./create_redux_connector";
 
 function loadApp(state, {
   name,
@@ -13,7 +13,7 @@ function loadApp(state, {
   if (!state[name]) {
     // 如果活动器是一个函数，通过调用函数得到一个实例对象
     let actionInstance = action;
-    if (typeof action === 'function') {
+    if (typeof action === "function") {
       actionInstance = action({
         appInfo,
         name
@@ -22,7 +22,7 @@ function loadApp(state, {
 
     // 如果减速器是一个函数，通过调用函数得到一个实例对象
     let reducerInstance = reducer;
-    if (typeof reducer === 'function') {
+    if (typeof reducer === "function") {
       reducerInstance = reducer({
         appInfo,
         name
@@ -35,13 +35,13 @@ function loadApp(state, {
         $set: reducerInstance.initState ? reducerInstance.initState() : {}
       }
     });
-
+    
     // 包装组件
     let container = createReduxConnector(
         component,
         wrapMapStateToProps(name),
         wrapMapDispatchToProps(name, actionInstance, reducerInstance),
-        null,
+        null, 
         {
           withRef: true,
           pure: true
@@ -51,7 +51,7 @@ function loadApp(state, {
     // 组件状态
     state = update(state, {
       [name]: {
-        '@@require': {
+        "@@require": {
           $set: {
             name,
             appInfo,
@@ -91,7 +91,7 @@ function reduce(state, {
 }) {
   let oldState = state[name];
   let newState = reducer[type].apply(this, [oldState].concat(payload));
-
+  
   if (typeof newState === "function") {
     newState = newState(injectFunsForReducer);
   }

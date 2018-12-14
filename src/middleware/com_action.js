@@ -1,17 +1,17 @@
 export function loadApp(name) {
 	return {
-		type: '@@loadApp',
+		type: "@@loadApp",
 		payload: {
-			names: [name],
-		},
+			names: [name]
+		}
 	};
 }
 
 export function clearAppState(name) {
 	return {
-		type: '@@clearAppState',
+		type: "@@clearAppState",
 		payload: {
-			name,
-		},
+			name
+		}
 	};
 }

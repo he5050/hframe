@@ -1,17 +1,17 @@
-import React from 'react';
-import { createStore, applyMiddleware, compose } from 'redux';
-import { Provider } from 'react-redux';
+import React from "react";
+import { createStore, applyMiddleware, compose } from "redux";
+import { Provider } from "react-redux";
 import { BrowserRouter, StaticRouter } from "react-router-dom";
-import appMiddleware from './app_middleware';
-import reducer from './com_reducer';
+import appMiddleware from "./app_middleware";
+import reducer from "./com_reducer";
 
 const crashReporter = store => next => action => {
   try {
     return next(action);
   } catch (err) {
-    console.error('捕捉到一个异常:[', err, ']');
-    console.error('动作:[', action, ']');
-    console.error('状态:[', store.getState(), ']');
+    console.error("捕捉到一个异常:[", err, "]");
+    console.error("动作:[", action, "]");
+    console.error("状态:[", store.getState(), "]");
     throw err;
   }
 };
@@ -20,12 +20,12 @@ const crashReporter = store => next => action => {
 export default function toRender(params, initState, routes, l, c) {
   let middleware = [];
   let enhancers = [];
-  if (params.mode === 'development') {
+  if (params.mode === "development") {
     middleware.push(crashReporter);
 
     // Redux DevTools
-    if (params.renderType === 'client') {
-      if (typeof devToolsExtension === 'function') {
+    if (params.renderType === "client") {
+      if (typeof devToolsExtension === "function") {
         enhancers.push(devToolsExtension());
       }
     }
@@ -35,8 +35,8 @@ export default function toRender(params, initState, routes, l, c) {
   let store;
   if (initState) {
     store = createStore(
-      reducer,
-      initState,
+      reducer, 
+      initState, 
       compose(
         applyMiddleware(...middleware),
         ...enhancers
@@ -44,16 +44,16 @@ export default function toRender(params, initState, routes, l, c) {
     );
   } else {
     store = createStore(
-      reducer,
+      reducer, 
       compose(
         applyMiddleware(...middleware),
         ...enhancers
       )
     );
   }
-
+  
   let render;
-  if (params.renderType === 'client') {
+  if (params.renderType === "client") {
     // 客户端渲染模型
     render = (
       <Provider store={store}>
@@ -69,9 +69,9 @@ export default function toRender(params, initState, routes, l, c) {
     if (params.tigNames) {
       // 触发
       store.dispatch({
-        type: '@@loadApp',
+        type: "@@loadApp",
         payload: {
-          names: [...params.tigNames],
+          names: [...params.tigNames]
         }
       });
     }

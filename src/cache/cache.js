@@ -7,7 +7,7 @@ export default class Cache {
     this.cache[key] = {
       value: value,
       expire: expire,
-      insertTime: +new Date(),
+      insertTime: +new Date()
     };
   }
 

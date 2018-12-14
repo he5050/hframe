@@ -2,9 +2,9 @@ import crypto from "crypto";
 
 const cryptoTool = {
   md5(password) {
-    let md5 = crypto.createHash('md5');
-    let salt = '(!%$88hs@gophs*)#sassb9';
-    let newPwd = md5.update(password + salt).digest('hex');
+    let md5 = crypto.createHash("md5");
+    let salt = "(!%$88hs@gophs*)#sassb9";
+    let newPwd = md5.update(password + salt).digest("hex");
     return newPwd;
   },
 

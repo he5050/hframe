@@ -1,13 +1,13 @@
-import appFactory from './app_factory';
+import appFactory from "./app_factory";
 
 export default () => store => {
 	return next => action => {
 		const { getState, dispatch } = store;
-		if (typeof action === 'function') {
+		if (typeof action === "function") {
 			const { name, actionCreator, args, reducer } = action();
 			const reduce = (type, ...args) => {
 				dispatch({
-					type: '@@reduce',
+					type: "@@reduce",
 					payload: {
 						name,
 						type,
@@ -16,7 +16,7 @@ export default () => store => {
 					}
 				});
 			};
-
+			
 			actionCreator(...args)({
 				currentApp: {
 					name
@@ -25,7 +25,7 @@ export default () => store => {
 				reduce,
 				getState: () => getState()[name]
 			});
-		} else if (action.type && action.type === '@@loadApp') {
+		} else if (action.type && action.type === "@@loadApp") {
 			try {
 				const { names = [] } = action.payload;
 				for (let i = 0; i < names.length; i++) {
@@ -33,7 +33,7 @@ export default () => store => {
 					let appInfo = appFactory.getApp(name);
 					appInfo.load((component, action, reducer) => {
 						return next({
-							type: '@@loadAppReal',
+							type: "@@loadAppReal",
 							payload: {
 								name,
 								appInfo,
