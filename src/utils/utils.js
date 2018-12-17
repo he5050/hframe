@@ -37,6 +37,45 @@ const utils = {
     }
     return paramsUrl;
   },
+  /**
+   * @description 构建url
+   * @param {String} url 原始地址
+   * @param {Object} param 查询参数
+   * @returns {String} 生成带参数的Url
+   */
+  buildQueryUrlSign(param = {}, url = "") {
+    let myURL = "";
+    for (let key in param) {
+      myURL += `&${key}=${param[key]}`;
+    }
+    if (url) {
+      return (url + "?" + myURL.substr(1)).replace(" ", "");
+    } else {
+      return (myURL.substr(1)).replace(" ", "");
+    }
+  },
+  /**
+   * @description 用于解析url
+   * @param {String} url 要解析的url
+   * @return {Object} query 返回查询的结果
+   */
+  parseQueryString(link) {
+    let url = decodeURIComponent(link);
+    let search =
+      url[0] === "?" ?
+      url.substr(1) :
+      url.substring(url.lastIndexOf("?") + 1);
+    if (search === "") return {};
+    search = search.split("&");
+    let query = {};
+    for (let i = 0; i < search.length; i++) {
+      let pair = search[i].split("=");
+      query[decodeURIComponent(pair[0])] = decodeURIComponent(
+        pair[1] || ""
+      );
+    }
+    return query;
+  },
 
   /**
    * 将数字转化成大些数字
@@ -129,14 +168,14 @@ const utils = {
     let ua = navigator.userAgent.toLowerCase();
     let s;
     (s = ua.match(/rv:([\d.]+)\) like gecko/)) ? sys.ie = s[1] :
-        (s = ua.match(/msie ([\d\.]+)/)) ? sys.ie = s[1] :
-        (s = ua.match(/edge\/([\d\.]+)/)) ? sys.edge = s[1] :
-        (s = ua.match(/firefox\/([\d\.]+)/)) ? sys.firefox = s[1] :
-        (s = ua.match(/(?:opera|opr).([\d\.]+)/)) ? sys.opera = s[1] :
-        (s = ua.match(/chrome\/([\d\.]+)/)) ? sys.chrome = s[1] :
-        (s = ua.match(/version\/([\d\.]+).*safari/)) ? sys.safari = s[1] : 0;
+      (s = ua.match(/msie ([\d\.]+)/)) ? sys.ie = s[1] :
+      (s = ua.match(/edge\/([\d\.]+)/)) ? sys.edge = s[1] :
+      (s = ua.match(/firefox\/([\d\.]+)/)) ? sys.firefox = s[1] :
+      (s = ua.match(/(?:opera|opr).([\d\.]+)/)) ? sys.opera = s[1] :
+      (s = ua.match(/chrome\/([\d\.]+)/)) ? sys.chrome = s[1] :
+      (s = ua.match(/version\/([\d\.]+).*safari/)) ? sys.safari = s[1] : 0;
 
-        // 根据关系进行判断
+    // 根据关系进行判断
     if (sys.ie) return ("IE: " + sys.ie);
     if (sys.edge) return ("EDGE: " + sys.edge);
     if (sys.firefox) return ("Firefox: " + sys.firefox);
@@ -162,7 +201,111 @@ const utils = {
     if (/iphone/i.test(userAgent) || /ipad/i.test(userAgent) || /ipod/i.test(userAgent)) "ios";
     if (/android/i.test(userAgent)) return "android";
     if (/win/i.test(appVersion) && /phone/i.test(userAgent)) return "windowsPhone";
-  }
+  },
+  /**
+   * 用于把用utf16编码的字符转换成实体字符，以供后台存储
+   * @param  {string} str 将要转换的字符串，其中含有utf16字符将被自动检出
+   * @return {string}     转换后的字符串，utf16字符将被转换成&#xxxx;形式的实体字符
+   */
+  utf16toEntities(str) {
+    let patt = /[\ud800-\udbff][\udc00-\udfff]/g; // 检测utf16字符正则
+    str = str.replace(patt, function (char) {
+      let H,
+        L,
+        code;
+      if (char.length === 2) {
+        H = char.charCodeAt(0); // 取出高位
+        L = char.charCodeAt(1); // 取出低位
+        code = (H - 0xD800) * 0x400 + 0x10000 + L - 0xDC00; // 转换算法
+        return "&#" + code + ";";
+      } else {
+        return char;
+      }
+    });
+    return str;
+  },
+
+  /**
+   * 用于解析出 emoji表情 把上面转的16位 直接转出来
+   * @param  {string} str 将要转换的字符串，其中含有utf16字符将被自动检出
+   * @return {string}     转换后的字符串，utf16字符将被转换成&#xxxx;形式的实体字符
+   */
+  entitiestoUtf16(str) {
+    // 检测出形如&#12345;形式的字符串
+    let strObj = this.utf16toEntities(str);
+    let patt = /&#\d+;/g;
+    let H, L, code;
+    let arr = strObj.match(patt) || [];
+    for (let i = 0; i < arr.length; i++) {
+      code = arr[i];
+      code = code.replace("&#", "").replace(";", "");
+      // 高位
+      H = Math.floor((code - 0x10000) / 0x400) + 0xD800;
+      // 低位
+      L = (code - 0x10000) % 0x400 + 0xDC00;
+      code = "&#" + code + ";";
+      let s = String.fromCharCode(H, L);
+      strObj = strObj.replace(code, s);
+    }
+    return strObj;
+  },
+  /**
+   * 用于生成指定长度的随机字符串
+   * @param  {Length} length 需要生成的字符串的长度
+   * @return {string}     返回新生成的字符串
+   */
+  randomString(length) {
+    const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz".split("");
+    if (!length) {
+      length = Math.floor(Math.random() * chars.length);
+    }
+    let str = "";
+    for (let i = 0; i < length; i++) {
+      str += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return str;
+  },
+  promiseHandle(API) {
+    if (typeof API === "function") {
+        return (options, ...params) => {
+            return new Promise((resolve, reject) => {
+                API(
+                    Object.assign({}, options, {
+                        success: resolve,
+                        fail: reject
+                    }),
+                    ...params
+                );
+                // 这是es7中的属性，用于处理最终状态
+                Promise.prototype.finally = function (callback) {
+                    let P = this.constructor;
+                    return this.then(
+                        value => P.resolve(callback()).then(() => value),
+                        error =>
+                        P.resolve(callback()).then(() => {
+                            throw error;
+                        })
+                    );
+                };
+            });
+        };
+    }
+},
+pHandle(fn) {
+  return (obj = {}) => {
+      return new Promise((resolve, reject) => {
+          obj.success = res => {
+              resolve(res);
+          };
+
+          obj.fail = res => {
+              reject(res);
+          };
+
+          fn(obj);
+      });
+  };
+}
 };
 
 export default utils;

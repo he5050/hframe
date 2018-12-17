@@ -9,6 +9,7 @@ import cryptoTool from "./utils/crypto_tool";
 import calendar from "./utils/calendar";
 import utils from "./utils/utils";
 import validation from "./utils/validation";
+import decorator from "./utils/decorator";
 import cachePool from "./cache/cache_manger";
 import fetchPack from "./net/fetch";
 import proxy from "./net/proxy";
@@ -48,5 +49,6 @@ export {
 	FilterItemType,
 	HFTree,
 	HFUpload,
-	NOPower
+	NOPower,
+	decorator
 };
